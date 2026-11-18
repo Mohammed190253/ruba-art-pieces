@@ -94,9 +94,8 @@
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 25px;">
                     <div>
                         <span class="section-subtitle" style="margin-bottom: 5px;">Active Portfolio</span>
-                        <h2 id="collection-title" style="font-family: var(--font-heading); font-size: 2.8rem; font-weight: 300;"></h2>
+                        <h2 id="collection-title" style="font-family: var(--font-heading); font-size: 2.8rem; font-weight: 300;">All Collections</h2>
                     </div>
-                    <button class="secondary-btn" onclick="showAllWorks()" style="padding: 12px 24px; font-size: 0.7rem;">View All Masterpieces</button>
                 </div>
 
                 <div id="gallery-grid" class="artworks-grid"></div>
@@ -104,23 +103,6 @@
 
         </div>
     </main>
-
-    <!-- Editorial Instagram / Studio Journal Section -->
-    <section class="instagram-section" style="border-top: 1px solid var(--border-subtle);">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">Studio Journal</span>
-                <h2>@Atelier.Art</h2>
-                <p style="margin-top: 10px;">Behind-the-scenes moments, texture studies, and private interior installations.</p>
-            </div>
-            
-            <div class="instagram-grid" id="instagram-grid">
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                    <p style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">Curating Studio Journal Moments...</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Luxury Footer -->
     <footer class="main-footer">
@@ -139,16 +121,6 @@
                         <li><a href="index.html#commissions">Commissions</a></li>
                         <li><a href="index.html#about">About</a></li>
                         <li><a href="index.html#contact">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Collections</h4>
-                    <ul class="footer-links">
-                        <li><a href="gallery.html">Golden Shadows</a></li>
-                        <li><a href="gallery.html">Quiet Forms</a></li>
-                        <li><a href="gallery.html">Earth & Stone</a></li>
-                        <li><a href="gallery.html">Minimal Forms</a></li>
                     </ul>
                 </div>
                 
@@ -289,8 +261,7 @@
         async function initGallery() {
             await Promise.all([
                 loadCategories(),
-                loadAllArtworksData(),
-                loadStudioMoments()
+                loadAllArtworksData()
             ]);
 
             // Check if URL specifies a collection
@@ -327,19 +298,12 @@
 
             bar.innerHTML = '';
 
-            // Pill: All Pieces
+            // Pill: All Collections
             const allBtn = document.createElement('button');
             allBtn.className = `gallery-filter-pill ${activeFilter === 'all' ? 'active' : ''}`;
-            allBtn.innerText = 'All Works';
+            allBtn.innerText = 'All Collections';
             allBtn.onclick = () => showAllWorks();
             bar.appendChild(allBtn);
-
-            // Pill: Series Collections Overview
-            const seriesBtn = document.createElement('button');
-            seriesBtn.className = `gallery-filter-pill ${activeFilter === 'collections' ? 'active' : ''}`;
-            seriesBtn.innerText = 'Curated Collections';
-            seriesBtn.onclick = () => showCollectionsDeck();
-            bar.appendChild(seriesBtn);
 
             // Category pills
             cachedCategories.forEach(cat => {
@@ -415,9 +379,9 @@
 
             document.getElementById('collection-menu').style.display = 'none';
             document.getElementById('items-view').style.display = 'block';
-            document.getElementById('collection-title').innerText = 'All Masterpieces';
+            document.getElementById('collection-title').innerText = 'All Collections';
 
-            renderArtworksGrid(cachedArtworks, 'All Masterpieces');
+            renderArtworksGrid(cachedArtworks, 'All Collections');
         }
 
         // 5. FILTER BY SPECIFIC COLLECTION
@@ -494,96 +458,7 @@
             });
         }
 
-        // 8. DYNAMIC STUDIO MOMENTS / BEHIND-THE-SCENES
-        async function loadStudioMoments() {
-            const grid = document.getElementById('instagram-grid');
-            if (!grid) return;
-
-            try {
-                let moments = [];
-
-                try {
-                    const { data: dedicatedData, error: dedErr } = await db
-                        .from('studio_moments')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (!dedErr && dedicatedData && dedicatedData.length > 0) {
-                        moments = dedicatedData;
-                    }
-                } catch (e) {}
-
-                if (moments.length === 0) {
-                    const { data: catData } = await db
-                        .from('artworks')
-                        .select('*')
-                        .eq('category', 'studio-moments')
-                        .order('created_at', { ascending: false });
-
-                    if (catData && catData.length > 0) {
-                        moments = catData;
-                    }
-                }
-
-                grid.innerHTML = '';
-
-                if (moments.length === 0) {
-                    const defaultMoments = [
-                        { image_url: 'images/collection_golden_shadows.png', title: 'Studio Journal', caption: 'Texture Study' },
-                        { image_url: 'images/artist_studio_atwork.png', title: 'Resin Layering Process', caption: 'Behind the Scenes' },
-                        { image_url: 'images/hero_luxury_interior.png', title: 'Interior Installation', caption: 'Architectural Placement' },
-                        { image_url: 'images/collection_earth_stone.png', title: 'Mineral Pigment Work', caption: 'Earth & Stone Study' }
-                    ];
-
-                    defaultMoments.forEach(m => {
-                        const item = document.createElement('div');
-                        item.className = 'instagram-item';
-                        item.onclick = () => openModal({
-                            name: m.title,
-                            image_url: m.image_url,
-                            size: m.caption,
-                            price: 'Studio Journal Archive',
-                            status: 'Behind-the-Scenes',
-                            description: m.caption
-                        });
-                        item.innerHTML = `
-                            <img src="${m.image_url}" alt="${m.title}">
-                            <div class="instagram-overlay">${m.title}</div>
-                        `;
-                        grid.appendChild(item);
-                    });
-                    return;
-                }
-
-                moments.forEach(m => {
-                    const title = m.title || m.name || 'Studio Moment';
-                    const caption = m.caption || m.price || 'View Studio Journal';
-                    const imgUrl = resolveImageUrl(m.image_url) || 'images/artist_studio_atwork.png';
-
-                    const item = document.createElement('div');
-                    item.className = 'instagram-item';
-                    item.style.cursor = 'pointer';
-                    item.onclick = () => openModal({
-                        name: title,
-                        image_url: imgUrl,
-                        size: caption,
-                        price: 'Studio Journal Archive',
-                        status: 'Behind-the-Scenes',
-                        description: caption
-                    });
-
-                    item.innerHTML = `
-                        <img src="${imgUrl}" alt="${title}" onerror="this.src='images/artist_studio_atwork.png'">
-                        <div class="instagram-overlay">${title}</div>
-                    `;
-                    grid.appendChild(item);
-                });
-
-            } catch (err) {
-                console.error('Error fetching studio moments:', err);
-            }
-        }
-
-        // 9. ARTWORK DETAIL MODAL
+        // 8. ARTWORK DETAIL MODAL
         let activeImages = [];
         function openModal(item) {
             try {

@@ -123,23 +123,6 @@
             </div>
         </section>
 
-        <!-- Featured Collections Section -->
-        <section class="collections-section" id="collections">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-subtitle">Curated Portfolios</span>
-                    <h2>Featured Collections</h2>
-                    <p style="margin-top: 15px;">Explore distinct series designed to bring texture, depth, and spatial balance into contemporary environments.</p>
-                </div>
-                
-                <div class="collections-grid" id="featured-collections-grid">
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 0;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">Curating Featured Collections...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Best Sellers / Selected Artworks Section -->
         <section class="artworks-section" id="selected-works">
             <div class="container">
@@ -161,34 +144,43 @@
             </div>
         </section>
 
-        <!-- About The Studio Section -->
+        <!-- ================================================================= -->
+        <!-- ABOUT THE STUDIO SECTION (EDITABLE CONTENT)                       -->
+        <!-- Modify directly in HTML below or via the ABOUT_STUDIO_CONTENT     -->
+        <!-- JavaScript object at the bottom of index.html.                    -->
+        <!-- ================================================================= -->
         <section class="about-section" id="about">
             <div class="container">
                 <div class="about-grid">
+                    <!-- Left: Studio Photo -->
                     <div class="about-image-wrapper">
                         <div class="about-image-frame">
-                            <img src="images/artist_studio_atwork.png" alt="Inside the Atelier Art Studio">
+                            <img src="images/artist_studio_atwork.png" alt="Inside the Atelier Art Studio" id="about-studio-img">
                         </div>
                     </div>
                     
+                    <!-- Right: Studio Narrative, Motto & Pillars -->
                     <div class="about-content">
-                        <span class="section-subtitle">Artistic Philosophy</span>
-                        <h2>About The Studio</h2>
+                        <span class="section-subtitle" id="about-studio-subtitle">Artistic Philosophy</span>
+                        <h2 id="about-studio-title">About The Studio</h2>
                         
-                        <blockquote class="about-quote">
+                        <!-- Main Artistic Quote -->
+                        <blockquote class="about-quote" id="about-studio-quote">
                             "I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."
                         </blockquote>
                         
-                        <p>Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture. Designed specifically to interact with architectural lighting and interior proportions, each canvas serves as a tactile focal point.</p>
+                        <!-- Studio Narrative Description -->
+                        <p id="about-studio-desc">Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture. Designed specifically to interact with architectural lighting and interior proportions, each canvas serves as a tactile focal point.</p>
                         
-                        <div class="about-pillars">
-                            <div class="pillar-item">
-                                <h4>Craftsmanship</h4>
-                                <p>Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.</p>
+                        <!-- Core Studio Pillars -->
+                        <div class="about-pillars" id="about-pillars-container">
+                            <div class="pillar-item" id="about-pillar-1">
+                                <h4 id="about-pillar-title-1">Craftsmanship</h4>
+                                <p id="about-pillar-desc-1">Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.</p>
                             </div>
-                            <div class="pillar-item">
-                                <h4>Interior Harmony</h4>
-                                <p>Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.</p>
+                            <div class="pillar-item" id="about-pillar-2">
+                                <h4 id="about-pillar-title-2">Interior Harmony</h4>
+                                <p id="about-pillar-desc-2">Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.</p>
                             </div>
                         </div>
                     </div>
@@ -289,51 +281,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Testimonials Section -->
-        <section class="testimonials-section">
-            <div class="container">
-                <span class="section-subtitle">Client Perspectives</span>
-                <h2>Refined Endorsements</h2>
-                
-                <div class="testimonials-grid">
-                    <div class="testimonial-item">
-                        <p class="testimonial-quote">"The resin depth and ambient light interaction of the artwork transformed our main living gallery into an architectural sanctuary."</p>
-                        <div class="testimonial-author">Claire V.</div>
-                        <div class="testimonial-role">Principal Interior Architect, Dubai</div>
-                    </div>
-
-                    <div class="testimonial-item">
-                        <p class="testimonial-quote">"A masterclass in minimal presence. The commission process was completely effortless and delivered ahead of schedule."</p>
-                        <div class="testimonial-author">Julian Rothschild</div>
-                        <div class="testimonial-role">Private Art Collector, London</div>
-                    </div>
-
-                    <div class="testimonial-item">
-                        <p class="testimonial-quote">"The custom resin panel matched our travertine walls flawlessly. Truly museum-grade craftsmanship."</p>
-                        <div class="testimonial-author">Marcus H.</div>
-                        <div class="testimonial-role">Luxury Residential Developer, Amman</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Editorial Instagram Section -->
-        <section class="instagram-section">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-subtitle">Studio Journal</span>
-                    <h2>@Atelier.Art</h2>
-                    <p style="margin-top: 10px;">Behind-the-scenes moments, texture studies, and private interior installations.</p>
-                </div>
-                
-                <div class="instagram-grid" id="instagram-grid">
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">Curating Studio Journal Moments...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <!-- Luxury Footer -->
@@ -353,16 +300,6 @@
                         <li><a href="#commissions">Commissions</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Collections</h4>
-                    <ul class="footer-links">
-                        <li><a href="gallery.html">Golden Shadows</a></li>
-                        <li><a href="gallery.html">Quiet Forms</a></li>
-                        <li><a href="gallery.html">Earth & Stone</a></li>
-                        <li><a href="gallery.html">Minimal Forms</a></li>
                     </ul>
                 </div>
                 
@@ -518,12 +455,11 @@
                 revealObserver.observe(el);
             });
 
-            // Initialize dynamic data fetches from Supabase
+            // Initialize dynamic data fetches from Supabase & content hydration
             loadHeroShowcase();
             loadStudioStories();
-            loadFeaturedCollections();
+            renderAboutStudio();
             loadFeaturedArtworks();
-            loadStudioMoments();
         });
 
         // Mobile Navigation Drawer Toggle
@@ -710,68 +646,57 @@
             }
         }
 
-        // 1. DYNAMIC FEATURED COLLECTIONS
-        async function loadFeaturedCollections() {
-            const grid = document.getElementById('featured-collections-grid');
-            if (!grid) return;
-
-            try {
-                const { data: categories, error } = await db
-                    .from('categories')
-                    .select('*')
-                    .order('created_at', { ascending: true });
-
-                if (error) throw error;
-
-                if (!categories || categories.length === 0) {
-                    grid.innerHTML = `
-                        <div class="collection-card" onclick="window.location.href='gallery.html?collection=Golden%20Shadows'">
-                            <div class="collection-image-wrapper">
-                                <img src="images/collection_golden_shadows.png" alt="Golden Shadows">
-                                <div class="collection-overlay"></div>
-                            </div>
-                            <div class="collection-meta">
-                                <h3 class="collection-name">Golden Shadows</h3>
-                                <span class="collection-count">Textured Gold Leaf & Resin</span>
-                            </div>
-                        </div>
-                    `;
-                    return;
+        // 1. EDITABLE "ABOUT THE STUDIO" CONFIGURATION & HYDRATION
+        // Easily update the studio photo, quote, narrative, and pillars below:
+        const ABOUT_STUDIO_CONTENT = {
+            image: "images/artist_studio_atwork.png",
+            imageAlt: "Inside the Atelier Art Studio",
+            subtitle: "Artistic Philosophy",
+            title: "About The Studio",
+            quote: "\"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors.\"",
+            description: "Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture. Designed specifically to interact with architectural lighting and interior proportions, each canvas serves as a tactile focal point.",
+            pillars: [
+                {
+                    title: "Craftsmanship",
+                    desc: "Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes."
+                },
+                {
+                    title: "Interior Harmony",
+                    desc: "Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles."
                 }
+            ]
+        };
 
-                grid.innerHTML = '';
-                for (const cat of categories) {
-                    const { data: firstArt } = await db
-                        .from('artworks')
-                        .select('image_url')
-                        .eq('category', cat.name)
-                        .limit(1)
-                        .maybeSingle();
+        function renderAboutStudio() {
+            try {
+                if (!ABOUT_STUDIO_CONTENT) return;
+                const imgEl = document.getElementById('about-studio-img');
+                const subEl = document.getElementById('about-studio-subtitle');
+                const titleEl = document.getElementById('about-studio-title');
+                const quoteEl = document.getElementById('about-studio-quote');
+                const descEl = document.getElementById('about-studio-desc');
+                const pTitle1 = document.getElementById('about-pillar-title-1');
+                const pDesc1 = document.getElementById('about-pillar-desc-1');
+                const pTitle2 = document.getElementById('about-pillar-title-2');
+                const pDesc2 = document.getElementById('about-pillar-desc-2');
 
-                    const key = cat.name.toLowerCase();
-                    const rawCover = firstArt?.image_url || LUXURY_COLLECTION_IMAGES[key] || 'images/collection_golden_shadows.png';
-                    const coverImg = resolveImageUrl(rawCover);
-                    const displayName = cat.name.charAt(0).toUpperCase() + cat.name.slice(1).replace(/-/g, ' ');
+                if (imgEl && ABOUT_STUDIO_CONTENT.image) {
+                    imgEl.src = resolveImageUrl(ABOUT_STUDIO_CONTENT.image);
+                    if (ABOUT_STUDIO_CONTENT.imageAlt) imgEl.alt = ABOUT_STUDIO_CONTENT.imageAlt;
+                }
+                if (subEl && ABOUT_STUDIO_CONTENT.subtitle) subEl.textContent = ABOUT_STUDIO_CONTENT.subtitle;
+                if (titleEl && ABOUT_STUDIO_CONTENT.title) titleEl.textContent = ABOUT_STUDIO_CONTENT.title;
+                if (quoteEl && ABOUT_STUDIO_CONTENT.quote) quoteEl.textContent = ABOUT_STUDIO_CONTENT.quote;
+                if (descEl && ABOUT_STUDIO_CONTENT.description) descEl.textContent = ABOUT_STUDIO_CONTENT.description;
 
-                    const card = document.createElement('div');
-                    card.className = 'collection-card';
-                    card.onclick = () => {
-                        window.location.href = `gallery.html?collection=${encodeURIComponent(cat.name)}`;
-                    };
-                    card.innerHTML = `
-                        <div class="collection-image-wrapper">
-                            <img src="${coverImg}" alt="${displayName}" onerror="this.src='images/collection_golden_shadows.png'">
-                            <div class="collection-overlay"></div>
-                        </div>
-                        <div class="collection-meta">
-                            <h3 class="collection-name">${displayName}</h3>
-                            <span class="collection-count">Curated Portfolio Series</span>
-                        </div>
-                    `;
-                    grid.appendChild(card);
+                if (Array.isArray(ABOUT_STUDIO_CONTENT.pillars)) {
+                    if (pTitle1 && ABOUT_STUDIO_CONTENT.pillars[0]?.title) pTitle1.textContent = ABOUT_STUDIO_CONTENT.pillars[0].title;
+                    if (pDesc1 && ABOUT_STUDIO_CONTENT.pillars[0]?.desc) pDesc1.textContent = ABOUT_STUDIO_CONTENT.pillars[0].desc;
+                    if (pTitle2 && ABOUT_STUDIO_CONTENT.pillars[1]?.title) pTitle2.textContent = ABOUT_STUDIO_CONTENT.pillars[1].title;
+                    if (pDesc2 && ABOUT_STUDIO_CONTENT.pillars[1]?.desc) pDesc2.textContent = ABOUT_STUDIO_CONTENT.pillars[1].desc;
                 }
             } catch (err) {
-                console.error('Error loading featured collections:', err);
+                console.warn('About Studio content hydration note:', err);
             }
         }
 
@@ -1219,100 +1144,7 @@
             }
         });
 
-        // 3. DYNAMIC INSTAGRAM / BEHIND-THE-SCENES / ARCHITECTURAL DIGEST
-        async function loadStudioMoments() {
-            const grid = document.getElementById('instagram-grid');
-            if (!grid) return;
-
-            try {
-                let moments = [];
-
-                // Dedicated table check
-                try {
-                    const { data: dedicatedData, error: dedErr } = await db
-                        .from('studio_moments')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (!dedErr && dedicatedData && dedicatedData.length > 0) {
-                        moments = dedicatedData;
-                    }
-                } catch (e) {}
-
-                // Or category in artworks
-                if (moments.length === 0) {
-                    const { data: catData } = await db
-                        .from('artworks')
-                        .select('*')
-                        .eq('category', 'studio-moments')
-                        .order('created_at', { ascending: false });
-
-                    if (catData && catData.length > 0) {
-                        moments = catData;
-                    }
-                }
-
-                grid.innerHTML = '';
-
-                // Fallback luxury showcase moments if DB has none yet
-                if (moments.length === 0) {
-                    const defaultMoments = [
-                        { image_url: 'images/collection_golden_shadows.png', title: 'Studio Journal', caption: 'Texture Study' },
-                        { image_url: 'images/artist_studio_atwork.png', title: 'Resin Layering Process', caption: 'Behind the Scenes' },
-                        { image_url: 'images/hero_luxury_interior.png', title: 'Interior Installation', caption: 'Architectural Placement' },
-                        { image_url: 'images/collection_earth_stone.png', title: 'Mineral Pigment Work', caption: 'Earth & Stone Study' }
-                    ];
-
-                    defaultMoments.forEach(m => {
-                        const item = document.createElement('div');
-                        item.className = 'instagram-item';
-                        item.onclick = () => openArtworkModal({
-                            name: m.title,
-                            image_url: m.image_url,
-                            size: m.caption,
-                            price: 'Studio Journal Archive',
-                            status: 'Behind-the-Scenes',
-                            description: m.caption
-                        });
-                        item.innerHTML = `
-                            <img src="${m.image_url}" alt="${m.title}">
-                            <div class="instagram-overlay">${m.title}</div>
-                        `;
-                        grid.appendChild(item);
-                    });
-                    return;
-                }
-
-                // Render dynamic moments using template literals
-                moments.forEach(m => {
-                    const title = m.title || m.name || 'Studio Moment';
-                    const caption = m.caption || m.price || 'View Studio Journal';
-                    const imgUrl = resolveImageUrl(m.image_url) || 'images/artist_studio_atwork.png';
-
-                    const item = document.createElement('div');
-                    item.className = 'instagram-item';
-                    item.style.cursor = 'pointer';
-                    item.onclick = () => openArtworkModal({
-                        name: title,
-                        image_url: imgUrl,
-                        size: caption,
-                        price: 'Studio Journal Archive',
-                        status: 'Behind-the-Scenes',
-                        description: caption
-                    });
-
-                    item.innerHTML = `
-                        <img src="${imgUrl}" alt="${title}" onerror="this.src='images/artist_studio_atwork.png'">
-                        <div class="instagram-overlay">${title}</div>
-                    `;
-                    grid.appendChild(item);
-                });
-
-            } catch (err) {
-                console.error('Error fetching studio moments:', err);
-            }
-        }
-
-        // 4. DYNAMIC MODAL VIEWER WITH SECONDARY IMAGE THUMBNAILS
+        // 3. DYNAMIC MODAL VIEWER WITH SECONDARY IMAGE THUMBNAILS
         let activeImages = [];
         function openArtworkModal(artwork) {
             try {
@@ -1465,7 +1297,7 @@
                     console.warn('[Inquiry] Database logging note:', inqDbErr);
                 }
 
-                let message = `Hello Atelier Art Studio,\n\nI am submitting a custom commission inquiry:\n\n`;
+                let message = `Hello Ruba Art Studio,\n\nI am submitting a custom commission inquiry:\n\n`;
                 message += `• Client Name: ${name}\n`;
                 message += `• Country/Location: ${country}\n`;
                 message += `• Email: ${email}\n`;
