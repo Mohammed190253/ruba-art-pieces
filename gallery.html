@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections & Gallery | Ruba Art Pieces</title>
+    
+    <!-- Meta Descriptions & SEO -->
+    <meta name="description" content="Explore curated portfolios of original contemporary paintings and handcrafted resin artwork series. Designed for refined modern interiors and private collections.">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts: Cormorant Garamond & Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Sticky Transparent Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-logo">
+                <a href="index.html" ondblclick="window.location.href='admin.html'; return false;">
+                    RUBA ART PIECES
+                    <span class="sub-logo">Contemporary Studio & Bespoke Creations</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="gallery.html" class="active">Collections</a>
+                <a href="index.html#commissions">Commissions</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main style="padding: 100px 0 140px;">
+        <div class="container">
+
+            <div class="section-header" style="margin-bottom: 40px;">
+                <span class="section-subtitle">Curated Portfolios</span>
+                <h1 id="page-main-title">Art Collections & Gallery</h1>
+                <p style="margin-top: 15px;">Discover curated series of resin works and oil canvases created to complement modern architecture.</p>
+            </div>
+
+            <!-- Dynamic Category Filter Pills -->
+            <div class="gallery-filter-bar" id="category-filter-bar">
+                <!-- Dynamically populated from Supabase categories -->
+            </div>
+
+            <!-- Dynamic Collection Selection Deck -->
+            <div id="collection-menu" class="collections-grid">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 0;">
+                    <p style="color: var(--text-muted); font-size: 0.95rem; letter-spacing: 2px; text-transform: uppercase;">Curating Gallery Collections...</p>
+                </div>
+            </div>
+
+            <!-- Detailed Artworks View inside Selected Collection -->
+            <div id="items-view" style="display: none;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 25px;">
+                    <div>
+                        <span class="section-subtitle" style="margin-bottom: 5px;">Active Portfolio</span>
+                        <h2 id="collection-title" style="font-family: var(--font-heading); font-size: 2.8rem; font-weight: 300;"></h2>
+                    </div>
+                    <button class="secondary-btn" onclick="showAllWorks()" style="padding: 12px 24px; font-size: 0.7rem;">View All Masterpieces</button>
+                </div>
+
+                <div id="gallery-grid" class="artworks-grid"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Editorial Instagram / Studio Journal Section -->
+    <section class="instagram-section" style="border-top: 1px solid var(--border-subtle);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Studio Journal</span>
+                <h2>@Atelier.Art</h2>
+                <p style="margin-top: 10px;">Behind-the-scenes moments, texture studies, and private interior installations.</p>
+            </div>
+            
+            <div class="instagram-grid" id="instagram-grid">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">Curating Studio Journal Moments...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Luxury Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo-text">RUBA ART PIECES</div>
+                    <p class="footer-tagline">Contemporary Studio & Bespoke Creations</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="gallery.html">Collections</a></li>
+                        <li><a href="index.html#commissions">Commissions</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Collections</h4>
+                    <ul class="footer-links">
+                        <li><a href="gallery.html">Golden Shadows</a></li>
+                        <li><a href="gallery.html">Quiet Forms</a></li>
+                        <li><a href="gallery.html">Earth & Stone</a></li>
+                        <li><a href="gallery.html">Minimal Forms</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Studio Concierge</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://wa.me/962790692555" target="_blank">WhatsApp Chat</a></li>
+                        <li><a href="https://www.instagram.com/" target="_blank">Instagram</a></li>
+                        <li><span>Amman, Jordan</span></li>
+                        <li><span>Worldwide Freight</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 RUBA ART PIECES. All Rights Reserved.</p>
+                <p>Designed for Refined Interiors</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Premium Luxury Detail Modal -->
+    <div id="artwork-modal" class="artwork-modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-content">
+                <!-- Left Pane: Images -->
+                <div class="modal-gallery-pane">
+                    <div class="modal-main-image-wrapper">
+                        <img id="modal-main-img" src="" alt="Artwork View">
+                    </div>
+                    <div id="modal-thumbnails" class="modal-thumbnails"></div>
+                </div>
+
+                <!-- Right Pane: Artwork Information -->
+                <div class="modal-info-pane">
+                    <span class="modal-price-badge" id="modal-art-price">Available Upon Inquiry</span>
+                    <h2 id="modal-art-name" class="modal-title"></h2>
+
+                    <div class="modal-meta-list">
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Dimensions</span>
+                            <span id="modal-art-size" class="modal-meta-value"></span>
+                        </div>
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Materials</span>
+                            <span id="modal-art-materials" class="modal-meta-value">High-Gloss Resin & Archival Pigment</span>
+                        </div>
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Year Created</span>
+                            <span id="modal-art-year" class="modal-meta-value">2026</span>
+                        </div>
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Edition</span>
+                            <span id="modal-art-edition" class="modal-meta-value">Original Artwork (1 of 1)</span>
+                        </div>
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Availability</span>
+                            <span id="modal-art-status" class="modal-meta-value">Available Upon Inquiry</span>
+                        </div>
+                        <div class="modal-meta-row">
+                            <span class="modal-meta-label">Estimated Shipping</span>
+                            <span id="modal-art-shipping" class="modal-meta-value">3–7 Business Days (Insured)</span>
+                        </div>
+                    </div>
+
+                    <p class="modal-story" id="modal-art-story">This statement piece features multi-layered resin, organic plaster relief, and bespoke metallic pigment transitions designed to interact with ambient architectural lighting.</p>
+
+                    <div class="modal-actions">
+                        <a id="modal-inquiry-btn" href="" target="_blank" class="primary-btn" style="text-align: center;">Inquire for Acquisition</a>
+                        <button onclick="closeModal()" class="secondary-btn">Close View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript & Supabase Pipeline -->
+    <script>
+        const SUPABASE_URL  = "https://buxxsxnvoahxsgsuimvo.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_nVpxpdYZKdDKgyuWZA62mg_QMKx_qlO";
+        const { createClient } = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ─── Supabase Image URL Helper ─────────────────────────────────────────
+        function resolveImageUrl(path) {
+            if (!path || typeof path !== 'string') return '';
+            const trimmed = path.trim();
+            if (!trimmed) return '';
+            if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('images/') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('artworks/')) {
+                return `${SUPABASE_URL}/storage/v1/object/public/${trimmed}`;
+            }
+            const clean = trimmed.replace(/^\/+/, '');
+            if (clean.startsWith('artworks/')) {
+                return `${SUPABASE_URL}/storage/v1/object/public/${clean}`;
+            }
+            return `${SUPABASE_URL}/storage/v1/object/public/artworks/${clean}`;
+        }
+
+        // Backward compatibility
+        const normalizeStorageUrl = resolveImageUrl;
+
+        const LUXURY_COLLECTION_IMAGES = {
+            'white': 'images/collection_white.png',
+            'black': 'images/collection_black.png',
+            'navy': 'images/collection_navy.png',
+            'golden shadows': 'images/collection_golden_shadows.png',
+            'quiet forms': 'images/collection_quiet_forms.png',
+            'earth & stone': 'images/collection_earth_stone.png',
+            'spring-collection': 'images/collection_golden_shadows.png'
+        };
+
+        let cachedArtworks = [];
+        let cachedCategories = [];
+        let activeFilter = 'all';
+
+        // 1. BOOT & INITIAL DATA FETCH
+        async function initGallery() {
+            await Promise.all([
+                loadCategories(),
+                loadAllArtworksData(),
+                loadStudioMoments()
+            ]);
+
+            // Check if URL specifies a collection
+            const urlParams = new URLSearchParams(window.location.search);
+            const reqCollection = urlParams.get('collection');
+            if (reqCollection) {
+                filterByCollection(reqCollection);
+            } else {
+                showAllWorks();
+            }
+        }
+
+        // 2. LOAD CATEGORIES & BUILD FILTER BAR
+        async function loadCategories() {
+            try {
+                const { data: categories, error } = await db
+                    .from('categories')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+                cachedCategories = categories || [];
+
+                renderFilterBar();
+                renderCollectionsDeck();
+            } catch (err) {
+                console.error('Error loading categories:', err);
+            }
+        }
+
+        function renderFilterBar() {
+            const bar = document.getElementById('category-filter-bar');
+            if (!bar) return;
+
+            bar.innerHTML = '';
+
+            // Pill: All Pieces
+            const allBtn = document.createElement('button');
+            allBtn.className = `gallery-filter-pill ${activeFilter === 'all' ? 'active' : ''}`;
+            allBtn.innerText = 'All Works';
+            allBtn.onclick = () => showAllWorks();
+            bar.appendChild(allBtn);
+
+            // Pill: Series Collections Overview
+            const seriesBtn = document.createElement('button');
+            seriesBtn.className = `gallery-filter-pill ${activeFilter === 'collections' ? 'active' : ''}`;
+            seriesBtn.innerText = 'Curated Collections';
+            seriesBtn.onclick = () => showCollectionsDeck();
+            bar.appendChild(seriesBtn);
+
+            // Category pills
+            cachedCategories.forEach(cat => {
+                const displayName = cat.name.charAt(0).toUpperCase() + cat.name.slice(1).replace(/-/g, ' ');
+                const pill = document.createElement('button');
+                pill.className = `gallery-filter-pill ${activeFilter === cat.name ? 'active' : ''}`;
+                pill.innerText = displayName;
+                pill.onclick = () => filterByCollection(cat.name);
+                bar.appendChild(pill);
+            });
+        }
+
+        async function renderCollectionsDeck() {
+            const menu = document.getElementById('collection-menu');
+            if (!menu) return;
+
+            menu.innerHTML = '';
+            for (const cat of cachedCategories) {
+                const key = cat.name.toLowerCase();
+                const firstArt = cachedArtworks.find(a => a.category?.toLowerCase() === key);
+                const rawCover = firstArt?.image_url || LUXURY_COLLECTION_IMAGES[key] || 'images/collection_golden_shadows.png';
+                const coverImg = resolveImageUrl(rawCover);
+                const displayName = cat.name.charAt(0).toUpperCase() + cat.name.slice(1).replace(/-/g, ' ');
+
+                const card = document.createElement('div');
+                card.className = 'collection-card';
+                card.onclick = () => filterByCollection(cat.name);
+                card.innerHTML = `
+                    <div class="collection-image-wrapper">
+                        <img src="${coverImg}" alt="${displayName}" onerror="this.src='images/collection_golden_shadows.png'">
+                        <div class="collection-overlay"></div>
+                    </div>
+                    <div class="collection-meta">
+                        <h3 class="collection-name">${displayName}</h3>
+                        <span class="collection-count">Curated Portfolio Series</span>
+                    </div>
+                `;
+                menu.appendChild(card);
+            }
+        }
+
+        // 3. FETCH ALL ARTWORKS FROM SUPABASE
+        async function loadAllArtworksData() {
+            try {
+                let { data: artworks, error } = await db
+                    .from('artworks')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    const res = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
+                    if (!res.error && res.data) artworks = res.data;
+                    else throw error;
+                }
+
+                // Filter out studio moments and hero showcase
+                cachedArtworks = (artworks || []).filter(item => 
+                    item.category !== 'studio-moments' && 
+                    item.category !== 'studio_moments' &&
+                    item.category !== 'hero_showcase' &&
+                    item.category !== 'hero-showcase'
+                );
+            } catch (err) {
+                console.error('Error fetching artworks from Supabase:', err);
+                cachedArtworks = [];
+            }
+        }
+
+        // 4. DISPLAY ALL WORKS
+        function showAllWorks() {
+            activeFilter = 'all';
+            renderFilterBar();
+
+            document.getElementById('collection-menu').style.display = 'none';
+            document.getElementById('items-view').style.display = 'block';
+            document.getElementById('collection-title').innerText = 'All Masterpieces';
+
+            renderArtworksGrid(cachedArtworks, 'All Masterpieces');
+        }
+
+        // 5. FILTER BY SPECIFIC COLLECTION
+        function filterByCollection(catName) {
+            activeFilter = catName;
+            renderFilterBar();
+
+            document.getElementById('collection-menu').style.display = 'none';
+            document.getElementById('items-view').style.display = 'block';
+
+            const displayName = catName.charAt(0).toUpperCase() + catName.slice(1).replace(/-/g, ' ');
+            document.getElementById('collection-title').innerText = displayName;
+
+            const filtered = cachedArtworks.filter(a => a.category?.toLowerCase() === catName.toLowerCase());
+            renderArtworksGrid(filtered, displayName);
+        }
+
+        // 6. SHOW COLLECTIONS DECK VIEW
+        function showCollectionsDeck() {
+            activeFilter = 'collections';
+            renderFilterBar();
+
+            document.getElementById('collection-menu').style.display = 'grid';
+            document.getElementById('items-view').style.display = 'none';
+            document.getElementById('page-main-title').style.display = 'block';
+        }
+
+        // 7. RENDER ARTWORKS GRID USING JAVASCRIPT TEMPLATE LITERALS
+        function renderArtworksGrid(artworksList, sectionName) {
+            const grid = document.getElementById('gallery-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            if (!artworksList || artworksList.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-gallery-state">
+                        <h3>${sectionName}</h3>
+                        <p>No works currently available in this series. Our studio crafts bespoke commissions tailored to your interior dimensions.</p>
+                        <a href="index.html#commissions" class="secondary-btn">Commission Bespoke Artwork</a>
+                    </div>
+                `;
+                return;
+            }
+
+            artworksList.forEach(artwork => {
+                const title = artwork.title || artwork.name || 'Untitled Artwork';
+                const imgUrl = resolveImageUrl(artwork.image_url) || 'images/collection_golden_shadows.png';
+                const status = artwork.status || 'Available Upon Inquiry';
+                const size = artwork.size || 'Custom Size';
+                const description = artwork.description || `${size} | Bespoke Resin & Oil`;
+
+                const priceFormatted = artwork.price 
+                    ? (artwork.price.toString().toLowerCase().includes('jod') ? artwork.price : `${artwork.price} JOD`)
+                    : 'Available Upon Inquiry';
+
+                const card = document.createElement('div');
+                card.className = 'art-card';
+                card.style.cursor = 'pointer';
+                card.onclick = () => openModal(artwork);
+
+                card.innerHTML = `
+                    <div class="image-wrapper">
+                        <span class="art-badge-inquiry">${status}</span>
+                        <img src="${imgUrl}" alt="${title}" onerror="this.src='images/collection_golden_shadows.png'">
+                    </div>
+                    <div class="art-info">
+                        <h3>${title}</h3>
+                        <p class="details">${description}</p>
+                        <span class="price-tag">${priceFormatted}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 8. DYNAMIC STUDIO MOMENTS / BEHIND-THE-SCENES
+        async function loadStudioMoments() {
+            const grid = document.getElementById('instagram-grid');
+            if (!grid) return;
+
+            try {
+                let moments = [];
+
+                try {
+                    const { data: dedicatedData, error: dedErr } = await db
+                        .from('studio_moments')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    if (!dedErr && dedicatedData && dedicatedData.length > 0) {
+                        moments = dedicatedData;
+                    }
+                } catch (e) {}
+
+                if (moments.length === 0) {
+                    const { data: catData } = await db
+                        .from('artworks')
+                        .select('*')
+                        .eq('category', 'studio-moments')
+                        .order('created_at', { ascending: false });
+
+                    if (catData && catData.length > 0) {
+                        moments = catData;
+                    }
+                }
+
+                grid.innerHTML = '';
+
+                if (moments.length === 0) {
+                    const defaultMoments = [
+                        { image_url: 'images/collection_golden_shadows.png', title: 'Studio Journal', caption: 'Texture Study' },
+                        { image_url: 'images/artist_studio_atwork.png', title: 'Resin Layering Process', caption: 'Behind the Scenes' },
+                        { image_url: 'images/hero_luxury_interior.png', title: 'Interior Installation', caption: 'Architectural Placement' },
+                        { image_url: 'images/collection_earth_stone.png', title: 'Mineral Pigment Work', caption: 'Earth & Stone Study' }
+                    ];
+
+                    defaultMoments.forEach(m => {
+                        const item = document.createElement('div');
+                        item.className = 'instagram-item';
+                        item.onclick = () => openModal({
+                            name: m.title,
+                            image_url: m.image_url,
+                            size: m.caption,
+                            price: 'Studio Journal Archive',
+                            status: 'Behind-the-Scenes',
+                            description: m.caption
+                        });
+                        item.innerHTML = `
+                            <img src="${m.image_url}" alt="${m.title}">
+                            <div class="instagram-overlay">${m.title}</div>
+                        `;
+                        grid.appendChild(item);
+                    });
+                    return;
+                }
+
+                moments.forEach(m => {
+                    const title = m.title || m.name || 'Studio Moment';
+                    const caption = m.caption || m.price || 'View Studio Journal';
+                    const imgUrl = resolveImageUrl(m.image_url) || 'images/artist_studio_atwork.png';
+
+                    const item = document.createElement('div');
+                    item.className = 'instagram-item';
+                    item.style.cursor = 'pointer';
+                    item.onclick = () => openModal({
+                        name: title,
+                        image_url: imgUrl,
+                        size: caption,
+                        price: 'Studio Journal Archive',
+                        status: 'Behind-the-Scenes',
+                        description: caption
+                    });
+
+                    item.innerHTML = `
+                        <img src="${imgUrl}" alt="${title}" onerror="this.src='images/artist_studio_atwork.png'">
+                        <div class="instagram-overlay">${title}</div>
+                    `;
+                    grid.appendChild(item);
+                });
+
+            } catch (err) {
+                console.error('Error fetching studio moments:', err);
+            }
+        }
+
+        // 9. ARTWORK DETAIL MODAL
+        let activeImages = [];
+        function openModal(item) {
+            try {
+                if (!item) return;
+                const title = item.title || item.name || 'Bespoke Masterpiece';
+                const size = item.size || '120 x 150 cm';
+                const price = item.price 
+                    ? (item.price.toString().toLowerCase().includes('jod') ? item.price : `${item.price} JOD`)
+                    : 'Available Upon Inquiry';
+                const status = item.status || 'Available Upon Inquiry';
+                const description = item.description || 'This statement piece features multi-layered resin, organic plaster relief, and bespoke metallic pigment transitions designed to interact with ambient architectural lighting.';
+                const mainImg = resolveImageUrl(item.image_url) || 'images/collection_golden_shadows.png';
+
+                activeImages = [mainImg];
+                if (item.secondary_images) {
+                    if (Array.isArray(item.secondary_images)) {
+                        activeImages = activeImages.concat(item.secondary_images.map(img => resolveImageUrl(img)));
+                    } else if (typeof item.secondary_images === 'string') {
+                        try {
+                            const parsed = JSON.parse(item.secondary_images);
+                            if (Array.isArray(parsed)) activeImages = activeImages.concat(parsed.map(img => resolveImageUrl(img)));
+                        } catch {}
+                    }
+                }
+
+                document.getElementById('modal-main-img').src = mainImg;
+                document.getElementById('modal-art-name').innerText = title;
+                document.getElementById('modal-art-size').innerText = size;
+                document.getElementById('modal-art-price').innerText = price;
+                document.getElementById('modal-art-status').innerText = status;
+                
+                const storyEl = document.getElementById('modal-art-story');
+                if (storyEl) storyEl.innerText = description;
+
+                const waMsg = `Hello Studio Concierge,\n\nI am inquiring about acquiring the artwork: "${title}" (${size}).\n\nPlease provide detailed acquisition terms, availability, and framing options.`;
+                document.getElementById('modal-inquiry-btn').href = `https://wa.me/962790692555?text=${encodeURIComponent(waMsg)}`;
+
+                const thumbsContainer = document.getElementById('modal-thumbnails');
+                thumbsContainer.innerHTML = '';
+
+                if (activeImages.length > 1) {
+                    activeImages.forEach((imgUrl, idx) => {
+                        const thumb = document.createElement('img');
+                        thumb.src = imgUrl;
+                        thumb.className = idx === 0 ? 'active' : '';
+                        thumb.onclick = () => {
+                            document.getElementById('modal-main-img').src = imgUrl;
+                            document.querySelectorAll('#modal-thumbnails img').forEach(t => t.classList.remove('active'));
+                            thumb.classList.add('active');
+                        };
+                        thumbsContainer.appendChild(thumb);
+                    });
+                }
+
+                document.getElementById('artwork-modal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } catch (modalErr) {
+                console.error('Error opening modal:', modalErr);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('artwork-modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Boot
+        initGallery();
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../sana-project"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "ruba-website"
+	}
+}

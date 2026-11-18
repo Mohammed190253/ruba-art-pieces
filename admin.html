@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Ruba Art Pieces</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- ── ADMIN LOGIN SCREEN ── -->
+    <div id="admin-login-container" class="admin-login-screen">
+        <div class="login-card">
+            <h1>RUBA ART PIECES</h1>
+            <p style="color: var(--text-muted); font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px;">Studio Management Authorization</p>
+            <div id="login-error-toast" class="login-toast error"></div>
+            <form class="admin-form" onsubmit="event.preventDefault(); submitLogin();">
+                <div class="form-group">
+                    <label for="admin-email">Admin Email</label>
+                    <input type="email" id="admin-email" placeholder="e.g. concierge@atelier.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Admin Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="admin-password" placeholder="••••••••••••" required autocomplete="current-password" style="width: 100%; padding-right: 50px;">
+                        <button type="button" onclick="togglePasswordVisibility('admin-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px;">Show</button>
+                    </div>
+                </div>
+                <button type="submit" id="login-btn" class="primary-btn" style="width: 100%; margin-top: 15px;">Authorize & Enter</button>
+            </form>
+            <p style="margin-top: 25px; font-size: 0.75rem; color: var(--text-muted);">
+                Protected by Supabase Auth (TLS Encrypted)
+            </p>
+        </div>
+    </div>
+
+    <!-- ── ADMIN DASHBOARD CONTAINER (HIDDEN UNTIL AUTH) ── -->
+    <div id="admin-dashboard-container" style="display: none;">
+        <!-- Premium Luxury Global Header -->
+        <header class="main-header">
+            <div class="container">
+                <div class="header-logo">
+                    <a href="index.html">
+                        RUBA ART PIECES
+                        <span class="sub-logo">Contemporary Studio & Bespoke Creations</span>
+                    </a>
+                </div>
+                <nav class="main-nav">
+                    <span id="admin-user-pill" style="font-size: 0.78rem; color: var(--accent-gold); letter-spacing: 1px; display: none; align-items: center; gap: 6px;"></span>
+                    <a href="index.html" target="_blank">View Site ↗</a>
+                    <a href="gallery.html" target="_blank">Collections ↗</a>
+                    <a href="#" onclick="logoutAdmin(); return false;" style="color: #e06c75;">Logout</a>
+                </nav>
+            </div>
+        </header>
+
+    <main class="admin-section animated-fade-in">
+        <div class="container">
+
+            <header class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                    Manage collections, upload artworks, review inquiries, and synchronize live assets — powered by Supabase.
+                </p>
+            </header>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="admin-tab-bar" id="admin-tab-bar">
+                <button class="admin-tab-btn active" id="tab-btn-artworks" onclick="switchAdminTab('artworks')">
+                    <span>Artworks & Collections</span>
+                </button>
+                <button class="admin-tab-btn" id="tab-btn-hero" onclick="switchAdminTab('hero')">
+                    <span>Hero & Showcase</span>
+                </button>
+                <button class="admin-tab-btn" id="tab-btn-moments" onclick="switchAdminTab('moments')">
+                    <span>Studio Moments</span>
+                    <span class="tab-badge" id="stories-count-badge" style="display:none;">0</span>
+                </button>
+                <button class="admin-tab-btn" id="tab-btn-inquiries" onclick="switchAdminTab('inquiries')">
+                    <span>Inquiries & Leads</span>
+                    <span class="tab-badge" id="leads-count-badge">0</span>
+                </button>
+                <button class="admin-tab-btn" id="tab-btn-account" onclick="switchAdminTab('account')">
+                    <span>Account Settings</span>
+                </button>
+            </div>
+
+            <!-- ── TAB 1: ARTWORKS & COLLECTIONS ── -->
+            <div class="admin-tab-pane" id="tab-pane-artworks">
+                <div class="admin-grid">
+
+                    <!-- ── ADD ARTWORK PANEL ── -->
+                    <div class="admin-box">
+                        <h2>Add New Artwork</h2>
+                        <form class="admin-form" onsubmit="event.preventDefault(); saveArtwork();">
+                            <div class="form-group">
+                                <label for="newName">Artwork Name</label>
+                                <input type="text" id="newName" placeholder="e.g. Amber Tide" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPrice">Price / Acquisition</label>
+                                <input type="text" id="newPrice" placeholder="e.g. 400 JOD or Available Upon Inquiry" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newSize">Size / Dimensions</label>
+                                <input type="text" id="newSize" placeholder="e.g. 60x80 cm" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newCategory">Collection Category</label>
+                                <select id="newCategory" required>
+                                    <!-- Populated dynamically from Supabase categories table -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newStatus">Availability Status</label>
+                                <select id="newStatus">
+                                    <option value="Available Upon Inquiry">Available Upon Inquiry</option>
+                                    <option value="In Stock">In Stock</option>
+                                    <option value="Acquired / Sold">Acquired / Sold</option>
+                                    <option value="Reserved">Reserved</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newDescription">Materials & Notes</label>
+                                <input type="text" id="newDescription" placeholder="e.g. Fluid Resin & Metallic Pigments on Italian Linen">
+                            </div>
+                            <div class="form-group">
+                                <label for="newImgMain" style="font-weight:600; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">Main Photo</label>
+                                <label class="admin-file-label" for="newImgMain">
+                                    <span id="file-label-text-main">Select Main Photo</span>
+                                </label>
+                                <input type="file" id="newImgMain" accept="image/*">
+                            </div>
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label for="newImgMainUrl">Or Direct Image URL (Optional)</label>
+                                <input type="url" id="newImgMainUrl" placeholder="https://... (if not uploading file)">
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="newImgSecondary" style="font-weight:600; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">Additional Photos</label>
+                                <label class="admin-file-label" for="newImgSecondary">
+                                    <span id="file-label-text-secondary">Select Additional Showcase Photos</span>
+                                </label>
+                                <input type="file" id="newImgSecondary" accept="image/*" multiple>
+                            </div>
+                            <button type="submit" id="save-artwork-btn" class="primary-btn">Save Artwork</button>
+                        </form>
+                    </div>
+
+                    <!-- ── MANAGE CATEGORIES PANEL ── -->
+                    <div class="admin-box">
+                        <h2>Manage Collections</h2>
+
+                        <!-- Create Collection Form -->
+                        <form class="admin-form" onsubmit="event.preventDefault(); addCategory();" style="margin-bottom: 40px;">
+                            <div class="form-group">
+                                <label for="catName">New Collection Name</label>
+                                <input type="text" id="catName" placeholder="e.g. Emerald" required>
+                            </div>
+                            <button type="submit" class="secondary-btn">Create Collection</button>
+                        </form>
+
+                        <h2>Active Categories</h2>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Display Name</th>
+                                        <th>Slug / ID</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categories-list">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── ALL ARTWORKS TABLE ── -->
+                <div class="admin-management-box" style="margin-top: 50px;">
+                    <h2>Manage Uploaded Artwork</h2>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Preview</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Size</th>
+                                    <th>Collection</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="artworks-list">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 2: HERO FEATURE & SHOWCASE SETTINGS ── -->
+            <div class="admin-tab-pane" id="tab-pane-hero" style="display: none;">
+                <div class="admin-management-box">
+                    <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px;">
+                        <h2>Hero Feature & Showcase Settings</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                            Manage the primary Architectural Digest hero image, badge subtitle, tagline, and headline displayed on the homepage.
+                        </p>
+                    </div>
+
+                    <div class="admin-grid" style="align-items: flex-start;">
+                        <!-- Edit Hero Form -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 20px;">Configure Hero Presentation</h3>
+                            <form class="admin-form" onsubmit="event.preventDefault(); saveHeroSettings();">
+                                <div class="form-group">
+                                    <label for="heroTagline">Hero Tagline / Header Pill</label>
+                                    <input type="text" id="heroTagline" placeholder="e.g. Bespoke Contemporary Art" oninput="updateHeroPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heroHeadline">Hero Main Headline</label>
+                                    <input type="text" id="heroHeadline" placeholder="e.g. Timeless Art for Modern Interiors" oninput="updateHeroPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heroDescription">Hero Subheading / Description</label>
+                                    <textarea id="heroDescription" rows="2" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 12px; font-family: var(--font-body); font-size: 0.88rem; resize: vertical;" placeholder="e.g. Original paintings and handcrafted resin artworks created to complement refined interiors." oninput="updateHeroPreview()"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heroBadgeTitle">Showcase Badge Title (e.g. Architectural Focus)</label>
+                                    <input type="text" id="heroBadgeTitle" placeholder="e.g. Architectural Focus" oninput="updateHeroPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heroBadgeDesc">Showcase Badge Description</label>
+                                    <input type="text" id="heroBadgeDesc" placeholder="e.g. Statement pieces tailored for high-end residential interiors" oninput="updateHeroPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heroImgFile" style="font-weight:600; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">Upload New Hero Showcase Photo</label>
+                                    <label class="admin-file-label" for="heroImgFile">
+                                        <span id="hero-file-label-text">Select Hero Image</span>
+                                    </label>
+                                    <input type="file" id="heroImgFile" accept="image/*">
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <label for="heroImgUrl">Or Direct Hero Image URL</label>
+                                    <input type="url" id="heroImgUrl" placeholder="https://... (or leave blank if uploading file)" oninput="updateHeroPreview()">
+                                </div>
+
+                                <button type="submit" id="save-hero-btn" class="primary-btn" style="width: 100%; margin-top: 15px;">Save Hero Settings</button>
+                                <div id="hero-status-toast" class="hero-status-toast"></div>
+                            </form>
+                        </div>
+
+                        <!-- Live Hero Showcase Preview Card -->
+                        <div class="hero-preview-container">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h3 style="font-family: var(--font-heading); font-size: 1.5rem;">Live Homepage Hero Preview</h3>
+                                <span style="font-size:0.72rem; letter-spacing:1px; text-transform:uppercase; color:var(--accent-gold); font-weight:600;">Active Display</span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.82rem;">Real-time preview of the hero showcase section as visitors experience it on the homepage:</p>
+                            
+                            <div class="hero-preview-screen">
+                                <img id="heroPreviewImg" src="images/hero_luxury_interior.png" alt="Showcase Preview" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80'">
+                                <div class="hero-preview-badge-overlay">
+                                    <div class="hero-preview-badge-title" id="heroPreviewBadgeTitle">Architectural Focus</div>
+                                    <div class="hero-preview-badge-desc" id="heroPreviewBadgeDesc">Statement pieces tailored for high-end residential interiors</div>
+                                </div>
+                            </div>
+
+                            <div class="hero-preview-text-block">
+                                <div class="hero-preview-tag" id="heroPreviewTag">Bespoke Contemporary Art</div>
+                                <div class="hero-preview-title" id="heroPreviewTitle">Timeless Art for Modern Interiors</div>
+                                <div class="hero-preview-desc" id="heroPreviewDesc">Original paintings and handcrafted resin artworks created to complement refined interiors.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 3: STUDIO MOMENTS & STORIES SECTION ── -->
+            <div class="admin-tab-pane" id="tab-pane-moments" style="display: none;">
+                <div class="admin-management-box">
+                    <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px;">
+                        <h2>Studio Moments & Artist Stories</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                            Publish ephemeral stories, texture studies, and behind-the-scenes moments displayed in the high-end circular stories bar on the homepage.
+                        </p>
+                    </div>
+
+                    <div class="admin-grid" style="align-items: flex-start;">
+                        <!-- Add Story Form -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 20px;">Publish New Studio Story</h3>
+                            <form class="admin-form" onsubmit="saveStudioStory(event);">
+                                <div class="form-group">
+                                    <label for="storyTitle">Story Title / Caption *</label>
+                                    <input type="text" id="storyTitle" placeholder="e.g. Sculpting Gold Veins & Texture" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="storyMediaFile" style="font-weight:600; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">Media Upload (Photo or Video)</label>
+                                    <label class="admin-file-label" for="storyMediaFile">
+                                        <span id="story-file-label-text">Select Photo or Video (.mp4)</span>
+                                    </label>
+                                    <input type="file" id="storyMediaFile" accept="image/*,video/*" onchange="handleStoryMediaSelected(this)">
+                                </div>
+
+                                <!-- Dynamic Media Preview -->
+                                <div id="story-preview-container" style="display: none; margin: 12px 0; text-align: center; background: #08080A; border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 10px;">
+                                    <img id="story-img-preview" src="" style="max-height: 180px; max-width: 100%; border-radius: 6px; display: none;" alt="Preview">
+                                    <video id="story-vid-preview" src="" controls muted playsinline style="max-height: 180px; max-width: 100%; border-radius: 6px; display: none;"></video>
+                                    <div id="story-preview-size" style="font-size: 0.75rem; color: var(--accent-gold); margin-top: 6px;"></div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <label for="storyMediaUrl">Or Direct Media URL</label>
+                                    <input type="url" id="storyMediaUrl" placeholder="https://... (optional if file selected)">
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                        <label for="storyLinkUrl" style="margin: 0;">Action / WhatsApp Link (Optional)</label>
+                                        <button type="button" onclick="prefillStoryWhatsApp()" class="secondary-btn" style="padding: 3px 8px; font-size: 0.7rem; border-radius: 4px;">Prefill WhatsApp Link</button>
+                                    </div>
+                                    <input type="text" id="storyLinkUrl" placeholder="https://wa.me/962790692555?text=...">
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <label for="storyExpiry">Story Expiration</label>
+                                    <select id="storyExpiry">
+                                        <option value="24">24 Hours (Standard Ephemeral Story)</option>
+                                        <option value="48">48 Hours</option>
+                                        <option value="168">7 Days</option>
+                                        <option value="permanent" selected>Permanent (No Auto-Expiration)</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" id="save-story-btn" class="primary-btn" style="width: 100%; margin-top: 15px;">Publish Studio Story</button>
+                            </form>
+                        </div>
+
+                        <!-- Active Stories Grid -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin: 0;">Active Studio Stories</h3>
+                                <button type="button" onclick="loadStudioStories()" class="secondary-btn" style="padding: 6px 14px; font-size: 0.75rem;">↻ Refresh</button>
+                            </div>
+                            <div id="stories-list" class="admin-moments-grid">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 4: CUSTOMER INQUIRIES & LEADS ── -->
+            <div class="admin-tab-pane" id="tab-pane-inquiries" style="display: none;">
+                <div class="admin-management-box">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px;">
+                        <div>
+                            <h2>Customer Inquiries & WhatsApp Leads</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                                Client commission requests, custom dimensions, architectural submissions, and contact leads from index.html.
+                            </p>
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                            <button onclick="loadInquiries()" class="secondary-btn" style="padding:8px 16px; font-size:0.75rem;">↻ Refresh Leads</button>
+                            <button onclick="filterInquiries('all')" class="admin-tab-btn active inq-filter-btn" id="inq-filter-all">All</button>
+                            <button onclick="filterInquiries('New Lead')" class="admin-tab-btn inq-filter-btn" id="inq-filter-new">New Leads</button>
+                            <button onclick="filterInquiries('Contacted')" class="admin-tab-btn inq-filter-btn" id="inq-filter-contacted">Contacted</button>
+                            <button onclick="filterInquiries('Closed')" class="admin-tab-btn inq-filter-btn" id="inq-filter-closed">Closed</button>
+                        </div>
+                    </div>
+
+                    <div id="inquiries-list">
+                        <!-- Loaded dynamically from Supabase inquiries table -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 5: ADMIN ACCOUNT SETTINGS (EMAIL/PASSWORD) ── -->
+            <div class="admin-tab-pane" id="tab-pane-account" style="display: none;">
+                <div class="admin-management-box">
+                    <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px;">
+                        <h2>Admin Security & Account Settings</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                            Manage administrator credentials, security access, and direct session authorization powered by Supabase Auth.
+                        </p>
+                    </div>
+
+                    <div class="admin-account-grid">
+                        <!-- Update Email Form -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <div class="account-card-header">
+                                <h3>Update Administrator Email</h3>
+                                <p>Active authorization email: <strong id="current-admin-email" style="color: var(--accent-gold);">Loading...</strong></p>
+                            </div>
+                            <form class="admin-form" onsubmit="event.preventDefault(); updateAdminEmail();">
+                                <div class="form-group">
+                                    <label for="new-admin-email">New Email Address</label>
+                                    <input type="email" id="new-admin-email" placeholder="e.g. director@atelier.com" required autocomplete="email">
+                                </div>
+                                <button type="submit" id="update-email-btn" class="primary-btn" style="width: 100%; margin-top: 10px;">Save New Email</button>
+                                <div id="email-update-toast" class="account-toast"></div>
+                            </form>
+                        </div>
+
+                        <!-- Update Password Form -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <div class="account-card-header">
+                                <h3>Change Administrator Password</h3>
+                                <p>Set a secure new password for dashboard login (minimum 6 characters).</p>
+                            </div>
+                            <form class="admin-form" onsubmit="event.preventDefault(); updateAdminPassword();">
+                                <div class="form-group">
+                                    <label for="new-admin-password">New Password</label>
+                                    <div style="position: relative;">
+                                        <input type="password" id="new-admin-password" placeholder="••••••••••••" minlength="6" required autocomplete="new-password" style="width: 100%; padding-right: 50px;">
+                                        <button type="button" onclick="togglePasswordVisibility('new-admin-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.72rem; text-transform: uppercase;">Show</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-admin-password">Confirm New Password</label>
+                                    <input type="password" id="confirm-admin-password" placeholder="••••••••••••" minlength="6" required autocomplete="new-password">
+                                </div>
+                                <button type="submit" id="update-password-btn" class="primary-btn" style="width: 100%; margin-top: 10px;">Update Password</button>
+                                <div id="password-update-toast" class="account-toast"></div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Active Session Overview -->
+                    <div class="admin-box" style="margin-top: 30px; background: var(--bg-primary); border-left: 3px solid var(--accent-gold);">
+                        <h4 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 8px;">Active Studio Session</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                            Logged in via Supabase Auth Session: <strong id="admin-session-email" style="color:var(--text-primary);">...</strong><br>
+                            Last Sign-In: <span id="admin-last-sign-in" style="color: var(--accent-gold);">Active Session</span>
+                        </p>
+                        <button onclick="logoutAdmin()" class="btn-delete" style="margin-top: 15px; padding: 10px 22px;">Sign Out of Studio Admin</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Luxury Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-logo">RUBA ART PIECES</div>
+            <p>&copy; 2026 RUBA ART PIECES. All Rights Reserved. Custom Resin & Oil Artworks.</p>
+        </div>
+    </footer>
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────
+        // SUPABASE INITIALIZATION
+        // ─────────────────────────────────────────────
+        const SUPABASE_URL      = "https://buxxsxnvoahxsgsuimvo.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_nVpxpdYZKdDKgyuWZA62mg_QMKx_qlO";
+        const { createClient }  = supabase;
+        const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ─── Supabase Image URL Helper ─────────────────────────────────────────
+        function resolveImageUrl(path) {
+            if (!path || typeof path !== 'string') return '';
+            const trimmed = path.trim();
+            if (!trimmed) return '';
+            if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('images/') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('artworks/')) {
+                return `${SUPABASE_URL}/storage/v1/object/public/${trimmed}`;
+            }
+            const clean = trimmed.replace(/^\/+/, '');
+            if (clean.startsWith('artworks/')) {
+                return `${SUPABASE_URL}/storage/v1/object/public/${clean}`;
+            }
+            return `${SUPABASE_URL}/storage/v1/object/public/artworks/${clean}`;
+        }
+
+        // Backward compatibility
+        const normalizeStorageUrl = resolveImageUrl;
+
+        // ─────────────────────────────────────────────
+        // 1. CLIENT-SIDE IMAGE COMPRESSION (Lightweight Canvas-based)
+        // ─────────────────────────────────────────────
+        async function compressImageFile(file, options = {}) {
+            if (!file || !file.type.startsWith('image/')) return file;
+            if (file.type === 'image/svg+xml' || file.type === 'image/gif') return file;
+
+            const maxDim = options.maxDim || 2048; // Max width/height in px (retina standard)
+            const quality = options.quality !== undefined ? options.quality : 0.82;
+
+            return new Promise((resolve) => {
+                try {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            let { width, height } = img;
+
+                            // Skip compression if already reasonably sized and under 600KB
+                            if (width <= maxDim && height <= maxDim && file.size < 600 * 1024) {
+                                return resolve(file);
+                            }
+
+                            // Scale down proportionally
+                            if (width > maxDim || height > maxDim) {
+                                if (width > height) {
+                                    height = Math.round((height * maxDim) / width);
+                                    width = maxDim;
+                                } else {
+                                    width = Math.round((width * maxDim) / height);
+                                    height = maxDim;
+                                }
+                            }
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            canvas.toBlob(
+                                (blob) => {
+                                    if (!blob || blob.size >= file.size) {
+                                        return resolve(file);
+                                    }
+                                    const baseName = file.name.replace(/\.[^.]+$/, '');
+                                    const compressedFile = new File([blob], `${baseName}.jpg`, {
+                                        type: 'image/jpeg',
+                                        lastModified: Date.now()
+                                    });
+                                    console.log(
+                                        `[Compression] ${file.name}: ${(file.size / 1024).toFixed(1)} KB -> ${(compressedFile.size / 1024).toFixed(1)} KB (${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`
+                                    );
+                                    resolve(compressedFile);
+                                },
+                                'image/jpeg',
+                                quality
+                            );
+                        };
+                        img.onerror = () => resolve(file);
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = () => resolve(file);
+                    reader.readAsDataURL(file);
+                } catch (err) {
+                    console.warn('[Compression] Fallback to original file:', err);
+                    resolve(file);
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // UI HELPERS (TABS & PASSWORD VISIBILITY)
+        // ─────────────────────────────────────────────
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.innerText = 'Show';
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            const tabs = ['artworks', 'hero', 'moments', 'inquiries', 'account'];
+            tabs.forEach(t => {
+                const pane = document.getElementById(`tab-pane-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (pane) pane.style.display = (t === tabName) ? 'block' : 'none';
+                if (btn) btn.classList.toggle('active', t === tabName);
+            });
+
+            if (tabName === 'moments') {
+                loadStudioStories();
+            } else if (tabName === 'inquiries') {
+                loadInquiries();
+            } else if (tabName === 'account') {
+                loadAccountInfo();
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // 3. SECURE AUTHENTICATION
+        // ─────────────────────────────────────────────
+        async function submitLogin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const errorToast = document.getElementById('login-error-toast');
+            const originalText = loginBtn.innerText;
+
+            if (errorToast) errorToast.style.display = 'none';
+            loginBtn.innerText = 'AUTHENTICATING...';
+            loginBtn.disabled = true;
+
+            try {
+                const { data, error } = await db.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    if (errorToast) {
+                        errorToast.innerText = 'Login Failed: ' + error.message;
+                        errorToast.style.display = 'block';
+                    } else {
+                        alert('Login failed: ' + error.message);
+                    }
+                    return;
+                }
+
+                showDashboard();
+            } catch (err) {
+                if (errorToast) {
+                    errorToast.innerText = 'Authorization Error: ' + err.message;
+                    errorToast.style.display = 'block';
+                } else {
+                    alert('Login failed: ' + err.message);
+                }
+            } finally {
+                loginBtn.innerText = originalText;
+                loginBtn.disabled = false;
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('admin-login-container').style.display = 'none';
+            document.getElementById('admin-dashboard-container').style.display = 'block';
+            loadAccountInfo();
+            loadCategories();
+            loadArtworks();
+            loadStudioStories();
+            loadHeroSettings();
+            loadInquiries();
+        }
+
+        async function logoutAdmin() {
+            try {
+                await db.auth.signOut();
+            } catch (e) {}
+            location.reload();
+        }
+
+        async function checkSession() {
+            try {
+                const { data: { session } } = await db.auth.getSession();
+                if (session) {
+                    showDashboard();
+                } else {
+                    document.getElementById('admin-login-container').style.display = 'flex';
+                    document.getElementById('admin-dashboard-container').style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Session check error:', err);
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // 2. INQUIRIES & LEADS DATABASE HANDLERS
+        // ─────────────────────────────────────────────
+        let cachedInquiries = [];
+        let activeInquiryFilter = 'all';
+
+        async function loadInquiries() {
+            const container = document.getElementById('inquiries-list');
+            const badge = document.getElementById('leads-count-badge');
+            if (!container) return;
+
+            container.innerHTML = "<p style='color:var(--text-muted); padding:30px; text-align:center;'>Loading customer inquiries & leads from Supabase...</p>";
+
+            try {
+                const { data, error } = await db
+                    .from('inquiries')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.warn('[Inquiries] Table query notice:', error.message);
+                    container.innerHTML = `
+                        <div style="border: 1px dashed var(--border-subtle); padding: 40px 20px; text-align:center; background: var(--bg-primary);">
+                            <h3 style="font-family: var(--font-heading); color: var(--accent-gold); font-size:1.4rem;">Inquiries Table Connection Ready</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 12px auto 0; line-height: 1.5;">
+                                The inquiries table has been linked. Client submissions from the website commission form will be displayed here in real time. (Table note: ${error.message})
+                            </p>
+                        </div>
+                    `;
+                    if (badge) badge.innerText = '0';
+                    return;
+                }
+
+                cachedInquiries = data || [];
+                const newLeads = cachedInquiries.filter(i => (i.status || 'New Lead').toLowerCase().includes('new'));
+                if (badge) badge.innerText = newLeads.length.toString();
+
+                renderInquiriesList();
+
+            } catch (err) {
+                console.error('Error loading inquiries:', err);
+                container.innerHTML = `<p style='color:#e06c75; padding:20px;'>Error retrieving leads: ${err.message}</p>`;
+            }
+        }
+
+        function filterInquiries(filterStatus) {
+            activeInquiryFilter = filterStatus;
+            document.querySelectorAll('.inq-filter-btn').forEach(btn => btn.classList.remove('active'));
+            if (filterStatus === 'all') document.getElementById('inq-filter-all')?.classList.add('active');
+            else if (filterStatus === 'New Lead') document.getElementById('inq-filter-new')?.classList.add('active');
+            else if (filterStatus === 'Contacted') document.getElementById('inq-filter-contacted')?.classList.add('active');
+            else if (filterStatus === 'Closed') document.getElementById('inq-filter-closed')?.classList.add('active');
+            renderInquiriesList();
+        }
+
+        function renderInquiriesList() {
+            const container = document.getElementById('inquiries-list');
+            if (!container) return;
+
+            const filtered = activeInquiryFilter === 'all'
+                ? cachedInquiries
+                : cachedInquiries.filter(i => (i.status || 'New Lead').toLowerCase().includes(activeInquiryFilter.toLowerCase()));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="border: 1px solid var(--border-subtle); background: var(--bg-primary); padding: 50px 20px; text-align:center;">
+                        <h3 style="font-family: var(--font-heading); font-size: 1.4rem;">No Inquiries in this View</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">No client inquiries match "${activeInquiryFilter}". Submissions from the homepage commission form will be listed here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach(inq => {
+                const clientName = inq.name || 'Private Collector';
+                const clientEmail = inq.email || 'No email provided';
+                const clientCountry = inq.country || 'Location not specified';
+                const clientDetails = inq.details || 'No additional specifications provided.';
+                const status = inq.status || 'New Lead';
+                const createdDate = inq.created_at ? new Date(inq.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Recent';
+                const hasAttachment = Boolean(inq.image_url);
+                const resolvedAttachment = hasAttachment ? resolveImageUrl(inq.image_url) : '';
+
+                const waMsg = `Hello ${clientName},\n\nThank you for reaching out to Ruba Art Pieces regarding your bespoke commission inquiry:\n"${clientDetails}"\n\nI would be delighted to assist you with material palettes, dimensions, and worldwide insured shipping.`;
+                const waLink = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+
+                let badgeClass = 'admin-badge-available';
+                if (status.toLowerCase().includes('closed')) badgeClass = 'admin-badge-sold';
+                else if (status.toLowerCase().includes('contacted')) badgeClass = 'admin-badge-reserved';
+
+                const card = document.createElement('div');
+                card.className = 'admin-inquiry-card';
+                card.innerHTML = `
+                    <div class="inquiry-meta-header">
+                        <div class="inquiry-client-info">
+                            <h3>${clientName}</h3>
+                            <span class="inquiry-location">${clientCountry}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <span class="admin-badge ${badgeClass}">${status}</span>
+                            <span class="inquiry-date">${createdDate}</span>
+                        </div>
+                    </div>
+
+                    <div class="inquiry-body-grid">
+                        <div>
+                            <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:6px;">Commission Specifications:</p>
+                            <div class="inquiry-specs-box">${clientDetails}</div>
+                            
+                            <div style="margin-top: 14px; font-size: 0.85rem;">
+                                <span style="color:var(--text-muted);">Email:</span>
+                                <a href="mailto:${clientEmail}?subject=Ruba%20Art%20Pieces%20Commission%20Inquiry" style="color:var(--accent-gold); margin-left: 6px; text-decoration: underline;">${clientEmail}</a>
+                            </div>
+                        </div>
+
+                        ${hasAttachment ? `
+                            <div style="text-align:center;">
+                                <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:6px;">Reference File</p>
+                                <a href="${resolvedAttachment}" target="_blank" class="inquiry-thumb-link" title="Click to view reference attachment">
+                                    <img src="${resolvedAttachment}" alt="Reference Photo" onerror="this.src='images/collection_golden_shadows.png'">
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="inquiry-actions-bar">
+                        <a href="${waLink}" target="_blank" class="primary-btn" style="padding: 8px 16px; font-size: 0.75rem;">Reply via WhatsApp</a>
+                        <a href="mailto:${clientEmail}?subject=Ruba%20Art%20Pieces%20Commission" class="secondary-btn" style="padding: 8px 16px; font-size: 0.75rem;">Send Email</a>
+                        
+                        <select style="background:var(--bg-primary); border:1px solid var(--border-subtle); color:var(--text-primary); padding:8px 12px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;" onchange="updateInquiryStatus('${inq.id}', this.value)">
+                            <option value="" disabled selected>Change Status...</option>
+                            <option value="New Lead">Mark: New Lead</option>
+                            <option value="Contacted">Mark: Contacted</option>
+                            <option value="Closed / Acquired">Mark: Closed</option>
+                        </select>
+
+                        <button class="btn-delete" style="margin-left:auto;" onclick="deleteInquiry('${inq.id}')">Delete Lead</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function updateInquiryStatus(id, newStatus) {
+            if (!id || !newStatus) return;
+            try {
+                const { error } = await db
+                    .from('inquiries')
+                    .update({ status: newStatus })
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadInquiries();
+            } catch (err) {
+                console.error('Error updating status:', err);
+                alert('Failed to update status: ' + err.message);
+            }
+        }
+
+        async function deleteInquiry(id) {
+            if (!confirm('Permanently delete this inquiry from the database?')) return;
+            try {
+                const { error } = await db
+                    .from('inquiries')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadInquiries();
+            } catch (err) {
+                console.error('Error deleting inquiry:', err);
+                alert('Failed to delete inquiry: ' + err.message);
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // 4. ACCOUNT SETTINGS (CHANGE EMAIL & PASSWORD)
+        // ─────────────────────────────────────────────
+        async function loadAccountInfo() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                if (user) {
+                    const currentEmailEl = document.getElementById('current-admin-email');
+                    if (currentEmailEl) currentEmailEl.innerText = user.email || 'Active Admin';
+                    
+                    const sessionEmailEl = document.getElementById('admin-session-email');
+                    if (sessionEmailEl) sessionEmailEl.innerText = user.email || 'Active';
+
+                    const userPill = document.getElementById('admin-user-pill');
+                    if (userPill) {
+                        userPill.style.display = 'inline-flex';
+                        userPill.innerHTML = `● ${user.email}`;
+                    }
+
+                    const lastSignEl = document.getElementById('admin-last-sign-in');
+                    if (lastSignEl && user.last_sign_in_at) {
+                        lastSignEl.innerText = new Date(user.last_sign_in_at).toLocaleString();
+                    }
+                }
+            } catch (err) {
+                console.warn('Error fetching account info:', err);
+            }
+        }
+
+        async function updateAdminEmail() {
+            const newEmail = document.getElementById('new-admin-email').value.trim();
+            const toast = document.getElementById('email-update-toast');
+            const btn = document.getElementById('update-email-btn');
+            if (!newEmail) return alert('Please enter a new email address.');
+
+            btn.innerText = 'UPDATING EMAIL...';
+            btn.disabled = true;
+            if (toast) toast.style.display = 'none';
+
+            try {
+                const { data, error } = await db.auth.updateUser({ email: newEmail });
+                if (error) throw error;
+
+                if (toast) {
+                    toast.className = 'account-toast success';
+                    toast.innerText = `✓ Email update initiated! Confirmation link has been dispatched to ${newEmail}. Please confirm to complete the update.`;
+                }
+                alert(`✓ Confirmation email sent to: ${newEmail}\nPlease check your inbox and click the verification link.`);
+                document.getElementById('new-admin-email').value = '';
+                loadAccountInfo();
+            } catch (err) {
+                console.error('Email update error:', err);
+                if (toast) {
+                    toast.className = 'account-toast error';
+                    toast.innerText = 'Failed to update email: ' + err.message;
+                }
+                alert('Email update failed: ' + err.message);
+            } finally {
+                btn.innerText = 'Save New Email';
+                btn.disabled = false;
+            }
+        }
+
+        async function updateAdminPassword() {
+            const newPassword = document.getElementById('new-admin-password').value;
+            const confirmPassword = document.getElementById('confirm-admin-password').value;
+            const toast = document.getElementById('password-update-toast');
+            const btn = document.getElementById('update-password-btn');
+
+            if (!newPassword || newPassword.length < 6) {
+                return alert('Password must be at least 6 characters long.');
+            }
+            if (newPassword !== confirmPassword) {
+                return alert('Passwords do not match. Please verify.');
+            }
+
+            btn.innerText = 'UPDATING PASSWORD...';
+            btn.disabled = true;
+            if (toast) toast.style.display = 'none';
+
+            try {
+                const { data, error } = await db.auth.updateUser({ password: newPassword });
+                if (error) throw error;
+
+                if (toast) {
+                    toast.className = 'account-toast success';
+                    toast.innerText = '✓ Admin password successfully updated! Use your new password for your next login.';
+                }
+                alert('✓ Admin password successfully updated!');
+                document.getElementById('new-admin-password').value = '';
+                document.getElementById('confirm-admin-password').value = '';
+            } catch (err) {
+                console.error('Password update error:', err);
+                if (toast) {
+                    toast.className = 'account-toast error';
+                    toast.innerText = 'Failed to update password: ' + err.message;
+                }
+                alert('Password update failed: ' + err.message);
+            } finally {
+                btn.innerText = 'Update Password';
+                btn.disabled = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // HELPER — extract the storage file path from a
+        // full Supabase public URL so we can call remove()
+        // URL pattern:  .../storage/v1/object/public/artworks/<filePath>
+        // ─────────────────────────────────────────────
+        function extractStoragePath(publicUrl) {
+            try {
+                const marker = '/object/public/artworks/';
+                const idx    = publicUrl.indexOf(marker);
+                if (idx === -1) return null;
+                return publicUrl.slice(idx + marker.length);
+            } catch {
+                return null;
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // LOAD CATEGORIES
+        // ─────────────────────────────────────────────
+        async function loadCategories() {
+            const dropdown      = document.getElementById('newCategory');
+            const categoriesList = document.getElementById('categories-list');
+
+            dropdown.innerHTML       = '';
+            categoriesList.innerHTML = "<tr><td colspan='3' style='text-align:center;color:var(--text-muted)'>Loading...</td></tr>";
+
+            try {
+                const { data: categories, error } = await db
+                    .from('categories')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                // Auto-seed defaults if table is empty
+                if (!categories || categories.length === 0) {
+                    const { error: seedErr } = await db
+                        .from('categories')
+                        .insert([{ name: 'white' }, { name: 'black' }, { name: 'navy' }]);
+
+                    if (seedErr) throw seedErr;
+                    location.reload();
+                    return;
+                }
+
+                categoriesList.innerHTML = '';
+
+                categories.forEach(cat => {
+                    const displayName = cat.name.charAt(0).toUpperCase() + cat.name.slice(1) + ' Collection';
+
+                    // Populate dropdown
+                    const opt = document.createElement('option');
+                    opt.value       = cat.name;
+                    opt.textContent = displayName;
+                    dropdown.appendChild(opt);
+
+                    // Populate table row
+                    categoriesList.innerHTML += `
+                        <tr>
+                            <td><strong>${displayName}</strong></td>
+                            <td><code>${cat.name}</code></td>
+                            <td>
+                                <button class="btn-delete" onclick="deleteCategory(${cat.id}, '${cat.name}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+            } catch (err) {
+                console.error('Error loading categories:', err);
+                categoriesList.innerHTML = "<tr><td colspan='3' style='color:#d9534f;'>Error loading categories: " + err.message + "</td></tr>";
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // LOAD ALL ARTWORKS
+        // ─────────────────────────────────────────────
+        async function loadArtworks() {
+            const list = document.getElementById('artworks-list');
+            list.innerHTML = "<tr><td colspan='7' style='text-align:center;color:var(--text-muted)'>Loading artworks...</td></tr>";
+
+            try {
+                const { data: artworks, error } = await db
+                    .from('artworks')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                list.innerHTML = '';
+
+                // Filter out any studio moments and hero showcase
+                const artPieces = (artworks || []).filter(item => 
+                    item.category !== 'studio-moments' && 
+                    item.category !== 'studio_moments' &&
+                    item.category !== 'hero_showcase' &&
+                    item.category !== 'hero-showcase'
+                );
+
+                if (artPieces.length === 0) {
+                    list.innerHTML = "<tr><td colspan='7' style='text-align:center;color:var(--text-muted)'>No artworks in the database yet.</td></tr>";
+                    return;
+                }
+
+                artPieces.forEach(item => {
+                    const statusText = item.status || 'Available Upon Inquiry';
+                    let badgeClass = 'admin-badge-available';
+                    if (statusText.toLowerCase().includes('sold') || statusText.toLowerCase().includes('acquired')) {
+                        badgeClass = 'admin-badge-sold';
+                    } else if (statusText.toLowerCase().includes('reserved')) {
+                        badgeClass = 'admin-badge-reserved';
+                    }
+
+                    list.innerHTML += `
+                        <tr>
+                            <td><img src="${resolveImageUrl(item.image_url)}" class="admin-thumb" alt="${item.name}"></td>
+                            <td><strong>${item.name}</strong></td>
+                            <td>${item.price}</td>
+                            <td>${item.size}</td>
+                            <td><span style="text-transform:uppercase;font-size:0.75rem;font-weight:600;letter-spacing:1px;">${item.category}</span></td>
+                            <td><span class="admin-badge ${badgeClass}">${statusText}</span></td>
+                            <td>
+                                <button class="btn-delete" onclick="deleteArtwork('${item.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+            } catch (err) {
+                console.error('Error loading artworks:', err);
+                list.innerHTML = `<tr><td colspan='7' style='text-align:center;color:#d9534f;'>Error fetching data: ${err.message}</td></tr>`;
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // ADD CATEGORY
+        // ─────────────────────────────────────────────
+        async function addCategory() {
+            const raw  = document.getElementById('catName').value.trim();
+            if (!raw) return alert('Please enter a collection name.');
+
+            // Slug: lowercase letters & digits only
+            const slug = raw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            if (!slug) return alert('Invalid collection name.');
+
+            try {
+                // Check for duplicates
+                const { data: existing } = await db
+                    .from('categories')
+                    .select('id')
+                    .eq('name', slug)
+                    .single();
+
+                if (existing) return alert('This collection already exists.');
+
+                const { error } = await db
+                    .from('categories')
+                    .insert([{ name: slug }]);
+
+                if (error) throw error;
+
+                alert('Collection "' + slug + '" created successfully!');
+                document.getElementById('catName').value = '';
+                loadCategories();
+
+            } catch (err) {
+                console.error('Error creating category:', err);
+                alert('Failed to create collection: ' + err.message);
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // DELETE CATEGORY
+        // ─────────────────────────────────────────────
+        async function deleteCategory(catId, catName) {
+            // Guard: prevent deletion if artworks still reference this category
+            const { data: linked } = await db
+                .from('artworks')
+                .select('id')
+                .eq('category', catName)
+                .limit(1);
+
+            if (linked && linked.length > 0) {
+                return alert('Cannot delete "' + catName + '": artworks still exist in this collection. Delete those artworks first.');
+            }
+
+            if (!confirm('Delete the "' + catName + '" collection? This cannot be undone.')) return;
+
+            try {
+                const { error } = await db
+                    .from('categories')
+                    .delete()
+                    .eq('id', catId);
+
+                if (error) throw error;
+
+                alert('Collection deleted.');
+                loadCategories();
+
+            } catch (err) {
+                console.error('Error deleting category:', err);
+                alert('Failed to delete: ' + err.message);
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // HELPER — UPLOAD FILE TO STORAGE WITH CLIENT-SIDE COMPRESSION
+        // ─────────────────────────────────────────────
+        async function uploadFileToStorage(file) {
+            const fileToUpload = await compressImageFile(file);
+            const ext      = fileToUpload.name.split('.').pop() || 'jpg';
+            const filePath = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+            const { error: uploadError } = await db.storage
+                .from('artworks')
+                .upload(filePath, fileToUpload, {
+                    cacheControl: '3600',
+                    upsert: false,
+                    contentType: fileToUpload.type || 'image/jpeg'
+                });
+
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = db.storage
+                .from('artworks')
+                .getPublicUrl(filePath);
+
+            return urlData.publicUrl;
+        }
+
+        // ─────────────────────────────────────────────
+        // SAVE ARTWORK (Upload cover & secondary images → DB Insert)
+        // ─────────────────────────────────────────────
+        async function saveArtwork() {
+            const name        = document.getElementById('newName').value.trim();
+            const price       = document.getElementById('newPrice').value.trim();
+            const size        = document.getElementById('newSize').value.trim();
+            const category    = document.getElementById('newCategory').value;
+            const status      = document.getElementById('newStatus').value;
+            const description = document.getElementById('newDescription').value.trim();
+            
+            const mainFileInput = document.getElementById('newImgMain');
+            const mainFile = mainFileInput.files[0];
+            const directUrlInput = document.getElementById('newImgMainUrl');
+            const directUrl = directUrlInput ? directUrlInput.value.trim() : '';
+            
+            const secondaryFileInput = document.getElementById('newImgSecondary');
+            const secondaryFiles = secondaryFileInput.files;
+
+            if (!name || !price || !size || (!mainFile && !directUrl)) {
+                return alert('Please fill out all required fields and select or specify a main cover image.');
+            }
+
+            const saveBtn    = document.getElementById('save-artwork-btn');
+            const origLabel  = saveBtn.innerText;
+            saveBtn.innerText  = 'UPLOADING...';
+            saveBtn.disabled   = true;
+
+            try {
+                // 1. Resolve Main Cover Photo URL
+                let mainUrl = directUrl;
+                if (mainFile) {
+                    mainUrl = await uploadFileToStorage(mainFile);
+                }
+
+                // 2. Upload Secondary Photos (if any selected)
+                const secondaryUrls = [];
+                if (secondaryFiles && secondaryFiles.length > 0) {
+                    for (let i = 0; i < secondaryFiles.length; i++) {
+                        const url = await uploadFileToStorage(secondaryFiles[i]);
+                        secondaryUrls.push(url);
+                    }
+                }
+
+                // 3. Insert artwork row into the `artworks` Postgres table
+                const payload = {
+                    name:      name,
+                    price:     price,
+                    size:      size,
+                    category:  category,
+                    image_url: mainUrl,
+                    secondary_images: secondaryUrls
+                };
+
+                // Try insert with status & description
+                let { error: insertError } = await db
+                    .from('artworks')
+                    .insert([{
+                        ...payload,
+                        status: status,
+                        description: description
+                    }]);
+
+                // Fallback if Postgres schema doesn't yet have status/description columns
+                if (insertError && insertError.message && insertError.message.includes('column')) {
+                    const fallbackRes = await db.from('artworks').insert([payload]);
+                    insertError = fallbackRes.error;
+                }
+
+                if (insertError) throw insertError;
+
+                alert('Success! Artwork "' + name + '" has been added to the ' + category + ' collection.');
+
+                // Clear form fields
+                document.getElementById('newName').value  = '';
+                document.getElementById('newPrice').value = '';
+                document.getElementById('newSize').value  = '';
+                document.getElementById('newDescription').value = '';
+                mainFileInput.value = '';
+                if (directUrlInput) directUrlInput.value = '';
+                secondaryFileInput.value = '';
+                document.getElementById('file-label-text-main').innerText = 'Select Main Photo';
+                document.getElementById('file-label-text-secondary').innerText = 'Select Additional Showcase Photos';
+
+                loadArtworks();
+
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Upload failed: ' + err.message);
+            } finally {
+                saveBtn.innerText = origLabel;
+                saveBtn.disabled  = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // DELETE ARTWORK (DB query first → Storage remove → DB delete)
+        // ─────────────────────────────────────────────
+        async function deleteArtwork(artworkId) {
+            if (!confirm('Permanently delete this artwork? This removes both the database record and all associated images from Storage.')) return;
+
+            try {
+                // Fetch the artwork record first to get all image URLs
+                const { data: item, error: fetchError } = await db
+                    .from('artworks')
+                    .select('image_url, secondary_images')
+                    .eq('id', artworkId)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                const filesToDelete = [];
+                if (item.image_url) {
+                    const path = extractStoragePath(item.image_url);
+                    if (path) filesToDelete.push(path);
+                }
+                
+                if (item.secondary_images && Array.isArray(item.secondary_images)) {
+                    item.secondary_images.forEach(url => {
+                        const path = extractStoragePath(url);
+                        if (path) filesToDelete.push(path);
+                    });
+                } else if (item.secondary_images && typeof item.secondary_images === 'string') {
+                    try {
+                        const parsed = JSON.parse(item.secondary_images);
+                        if (Array.isArray(parsed)) {
+                            parsed.forEach(url => {
+                                const path = extractStoragePath(url);
+                                if (path) filesToDelete.push(path);
+                            });
+                        }
+                    } catch {}
+                }
+
+                // 1. Remove all images from Supabase Storage
+                if (filesToDelete.length > 0) {
+                    const { error: storageError } = await db.storage
+                        .from('artworks')
+                        .remove(filesToDelete);
+
+                    if (storageError) {
+                        console.warn('Storage removal warning:', storageError.message);
+                    }
+                }
+
+                // 2. Delete the row from the `artworks` Postgres table
+                const { error: dbError } = await db
+                    .from('artworks')
+                    .delete()
+                    .eq('id', artworkId);
+
+                if (dbError) throw dbError;
+
+                alert('Artwork deleted successfully.');
+                loadArtworks();
+
+            } catch (err) {
+                console.error('Delete error:', err);
+                alert('Failed to delete artwork: ' + err.message);
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // STUDIO MOMENTS & ARTIST STORIES MANAGEMENT
+        // ─────────────────────────────────────────────
+        function isMediaVideo(url) {
+            if (!url || typeof url !== 'string') return false;
+            const clean = url.split('?')[0].toLowerCase();
+            return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || clean.endsWith('.ogg');
+        }
+
+        function handleStoryMediaSelected(input) {
+            const file = input && input.files ? input.files[0] : null;
+            const previewContainer = document.getElementById('story-preview-container');
+            const imgPreview = document.getElementById('story-img-preview');
+            const vidPreview = document.getElementById('story-vid-preview');
+            const sizeLabel = document.getElementById('story-preview-size');
+            const labelText = document.getElementById('story-file-label-text');
+
+            if (!file) {
+                if (previewContainer) previewContainer.style.display = 'none';
+                if (labelText) labelText.innerText = 'Select Photo or Video (.mp4)';
+                return;
+            }
+
+            if (labelText) labelText.innerText = file.name;
+            if (previewContainer) previewContainer.style.display = 'block';
+
+            const fileSizeKB = (file.size / 1024).toFixed(1);
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            const sizeStr = file.size > 1024 * 1024 ? `${fileSizeMB} MB` : `${fileSizeKB} KB`;
+
+            if (file.type.startsWith('video/')) {
+                if (imgPreview) imgPreview.style.display = 'none';
+                if (vidPreview) {
+                    vidPreview.style.display = 'block';
+                    vidPreview.src = URL.createObjectURL(file);
+                }
+                if (sizeLabel) sizeLabel.innerText = `Selected Video: ${file.name} (${sizeStr}) - Ready to upload`;
+            } else {
+                if (vidPreview) {
+                    vidPreview.pause();
+                    vidPreview.style.display = 'none';
+                }
+                if (imgPreview) {
+                    imgPreview.style.display = 'block';
+                    imgPreview.src = URL.createObjectURL(file);
+                }
+                if (sizeLabel) sizeLabel.innerText = `Selected Photo: ${file.name} (${sizeStr}) - Will be auto-compressed before upload`;
+            }
+        }
+
+        function prefillStoryWhatsApp() {
+            const title = document.getElementById('storyTitle')?.value.trim() || 'Studio Creation';
+            const input = document.getElementById('storyLinkUrl');
+            if (input) {
+                input.value = `https://wa.me/962790692555?text=${encodeURIComponent('Hello Ruba, I am inquiring about your Studio Moment: ' + title)}`;
+            }
+        }
+
+        async function saveStudioStory(event) {
+            if (event && event.preventDefault) {
+                event.preventDefault();
+            }
+
+            const titleInput = document.getElementById('storyTitle');
+            const title = titleInput ? titleInput.value.trim() : '';
+            const fileInput = document.getElementById('storyMediaFile');
+            const file = fileInput?.files?.[0];
+            const urlInput = document.getElementById('storyMediaUrl');
+            const directUrl = urlInput ? urlInput.value.trim() : '';
+            const linkInput = document.getElementById('storyLinkUrl');
+            const linkUrl = linkInput ? linkInput.value.trim() : '';
+            const expiryVal = document.getElementById('storyExpiry')?.value || 'permanent';
+
+            if (!title) {
+                return alert('Please enter a Story Title or caption.');
+            }
+            if (!file && !directUrl) {
+                return alert('Please select a photo/video file or enter a direct media URL.');
+            }
+
+            const btn = document.getElementById('save-story-btn') || document.getElementById('save-moment-btn');
+            const originalText = btn ? btn.innerText : 'Publish Studio Story';
+            if (btn) {
+                btn.innerText = 'PUBLISHING STORY...';
+                btn.disabled = true;
+            }
+
+            try {
+                let mediaUrl = directUrl;
+
+                if (file) {
+                    let fileToUpload = file;
+                    // If image, compress it client-side
+                    if (file.type.startsWith('image/')) {
+                        try {
+                            if (btn) btn.innerText = 'OPTIMIZING PHOTO...';
+                            fileToUpload = await compressImageFile(file, { maxDimension: 2048, quality: 0.82 });
+                        } catch (compErr) {
+                            console.warn('Compression fallback to original file:', compErr);
+                            fileToUpload = file;
+                        }
+                    }
+
+                    if (btn) btn.innerText = 'UPLOADING TO STORAGE...';
+                    const cleanName = fileToUpload.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                    const filePath = `stories/${Date.now()}_${cleanName}`;
+
+                    const { error: uploadError } = await db.storage
+                        .from('artworks')
+                        .upload(filePath, fileToUpload, {
+                            cacheControl: '3600',
+                            upsert: true,
+                            contentType: fileToUpload.type || (fileToUpload.name.endsWith('.mp4') ? 'video/mp4' : 'image/jpeg')
+                        });
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: publicUrlData } = db.storage
+                        .from('artworks')
+                        .getPublicUrl(filePath);
+
+                    mediaUrl = publicUrlData?.publicUrl || '';
+                    if (!mediaUrl) throw new Error('Could not retrieve public URL for uploaded media.');
+                }
+
+                // Calculate expiry timestamp
+                let expiresAt = null;
+                if (expiryVal !== 'permanent') {
+                    const hours = parseInt(expiryVal, 10);
+                    if (!isNaN(hours) && hours > 0) {
+                        expiresAt = new Date(Date.now() + hours * 3600 * 1000).toISOString();
+                    }
+                }
+
+                if (btn) btn.innerText = 'SAVING STORY RECORD...';
+
+                // Insert into studio_stories table
+                let saved = false;
+                try {
+                    const { error: storyErr } = await db
+                        .from('studio_stories')
+                        .insert([{
+                            title: title,
+                            media_url: mediaUrl,
+                            link_url: linkUrl || null,
+                            expires_at: expiresAt,
+                            created_at: new Date().toISOString()
+                        }]);
+
+                    if (!storyErr) {
+                        saved = true;
+                    } else {
+                        console.warn('studio_stories table insert note:', storyErr);
+                    }
+                } catch (dbErr) {
+                    console.warn('Database error inserting to studio_stories:', dbErr);
+                }
+
+                // Fallback to studio_moments or artworks if studio_stories table is not yet migrated
+                if (!saved) {
+                    try {
+                        const { error: mErr } = await db.from('studio_moments').insert([{
+                            title: title,
+                            caption: linkUrl || 'Studio Story',
+                            image_url: mediaUrl
+                        }]);
+                        if (!mErr) saved = true;
+                    } catch (e) {}
+
+                    if (!saved) {
+                        const { error: artErr } = await db.from('artworks').insert([{
+                            name: title,
+                            price: linkUrl || 'Studio Story',
+                            size: 'Studio Story',
+                            category: 'studio-moments',
+                            image_url: mediaUrl,
+                            secondary_images: []
+                        }]);
+                        if (artErr) throw artErr;
+                    }
+                }
+
+                alert('Success! Studio Moment / Story published immediately to the homepage.');
+
+                // Reset Form
+                if (titleInput) titleInput.value = '';
+                if (fileInput) fileInput.value = '';
+                if (urlInput) urlInput.value = '';
+                if (linkInput) linkInput.value = '';
+                const previewContainer = document.getElementById('story-preview-container');
+                if (previewContainer) previewContainer.style.display = 'none';
+                const labelText = document.getElementById('story-file-label-text');
+                if (labelText) labelText.innerText = 'Select Photo or Video (.mp4)';
+
+                loadStudioStories();
+
+            } catch (err) {
+                console.error('Error publishing story:', err);
+                alert('Publishing Error: ' + err.message + '\n\nNote: If the `studio_stories` table has not been created yet in Supabase, execute the SQL in migration.sql.');
+            } finally {
+                if (btn) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        async function loadStudioStories() {
+            const container = document.getElementById('stories-list') || document.getElementById('moments-list');
+            const countBadge = document.getElementById('stories-count-badge');
+            if (!container) return;
+
+            container.innerHTML = "<p style='color:var(--text-muted); padding: 20px; text-align:center;'>Loading published stories...</p>";
+
+            try {
+                let stories = [];
+
+                // 1. Try studio_stories table
+                try {
+                    const { data: storyData, error: storyErr } = await db
+                        .from('studio_stories')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (!storyErr && storyData && storyData.length > 0) {
+                        stories = storyData;
+                    }
+                } catch (e) {}
+
+                // 2. Fallback check from studio_moments or artworks
+                if (stories.length === 0) {
+                    try {
+                        const { data: momData } = await db
+                            .from('studio_moments')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        if (momData && momData.length > 0) {
+                            stories = momData.map(m => ({
+                                id: m.id,
+                                title: m.title || 'Studio Story',
+                                media_url: m.image_url,
+                                link_url: m.caption && m.caption.startsWith('http') ? m.caption : null,
+                                created_at: m.created_at,
+                                source_table: 'studio_moments'
+                            }));
+                        }
+                    } catch (e) {}
+                }
+
+                if (countBadge) {
+                    countBadge.innerText = stories.length;
+                    countBadge.style.display = stories.length > 0 ? 'inline-block' : 'none';
+                }
+
+                container.innerHTML = '';
+
+                if (stories.length === 0) {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; padding: 25px; text-align: center; color: var(--text-muted); background: var(--bg-secondary); border-radius: 8px;">
+                            <p style="margin: 0; font-size: 0.9rem;">No custom studio stories published yet.</p>
+                            <p style="margin: 6px 0 0; font-size: 0.8rem; color: var(--accent-gold);">The homepage is currently displaying curated default studio moments.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const now = new Date();
+                stories.forEach(story => {
+                    const isVid = isMediaVideo(story.media_url);
+                    const resolvedUrl = resolveImageUrl(story.media_url);
+                    const card = document.createElement('div');
+                    card.className = 'admin-moment-card';
+
+                    // Expiry calculation
+                    let expiryBadge = `<span style="display:inline-block; font-size:0.7rem; color:var(--accent-gold); background:rgba(212,175,55,0.1); padding:2px 8px; border-radius:12px; margin-top:4px;">Permanent</span>`;
+                    if (story.expires_at) {
+                        const expDate = new Date(story.expires_at);
+                        const isExpired = expDate < now;
+                        if (isExpired) {
+                            expiryBadge = `<span style="display:inline-block; font-size:0.7rem; color:#d9534f; background:rgba(217,83,79,0.1); padding:2px 8px; border-radius:12px; margin-top:4px;">Expired</span>`;
+                        } else {
+                            const hoursLeft = Math.round((expDate - now) / (1000 * 3600));
+                            expiryBadge = `<span style="display:inline-block; font-size:0.7rem; color:#5cb85c; background:rgba(92,184,92,0.1); padding:2px 8px; border-radius:12px; margin-top:4px;">Active (${hoursLeft}h left)</span>`;
+                        }
+                    }
+
+                    const source = story.source_table || 'studio_stories';
+
+                    card.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 160px; overflow: hidden; background: #08080A;">
+                            ${isVid 
+                                ? `<video src="${resolvedUrl}#t=0.5" style="width: 100%; height: 100%; object-fit: cover;" muted playsinline></video>
+                                   <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: var(--accent-gold); border: 1px solid var(--accent-gold); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">▶</span>`
+                                : `<img src="${resolvedUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="${story.title}" onerror="this.src='images/artist_studio_atwork.png'">`
+                            }
+                        </div>
+                        <div class="admin-moment-body" style="padding: 16px;">
+                            <span class="admin-moment-title" style="font-weight: 600; font-size: 0.95rem;" title="${story.title}">${story.title}</span>
+                            <div>${expiryBadge}</div>
+                            ${story.link_url ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Link: <a href="${story.link_url}" target="_blank" style="color: var(--accent-gold); text-decoration: none;">WhatsApp / Action</a></div>` : ''}
+                            <div style="display: flex; gap: 8px; margin-top: 14px;">
+                                <a href="${resolvedUrl}" target="_blank" class="secondary-btn" style="flex: 1; text-align: center; padding: 6px; font-size: 0.75rem; text-decoration: none;">View Media</a>
+                                <button type="button" class="btn-delete" style="flex: 1; padding: 6px; font-size: 0.75rem;" onclick="deleteStudioStory('${story.id}', '${story.media_url}', '${source}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error('Error loading studio stories:', err);
+                container.innerHTML = "<p style='color:#d9534f; padding: 20px;'>Error loading stories: " + err.message + "</p>";
+            }
+        }
+
+        async function deleteStudioStory(id, mediaUrl, sourceTable = 'studio_stories') {
+            if (!confirm('Are you sure you want to permanently delete this Studio Story?')) return;
+
+            try {
+                const filePath = extractStoragePath(mediaUrl);
+                if (filePath) {
+                    try {
+                        await db.storage.from('artworks').remove([filePath]);
+                    } catch (stErr) {
+                        console.warn('Storage delete note:', stErr);
+                    }
+                }
+
+                if (sourceTable === 'studio_moments') {
+                    await db.from('studio_moments').delete().eq('id', id);
+                } else if (sourceTable === 'artworks') {
+                    await db.from('artworks').delete().eq('id', id);
+                } else {
+                    await db.from('studio_stories').delete().eq('id', id);
+                }
+
+                alert('Studio Story deleted successfully.');
+                loadStudioStories();
+
+            } catch (err) {
+                console.error('Error deleting story:', err);
+                alert('Failed to delete story: ' + err.message);
+            }
+        }
+
+        // Backward compatibility aliases
+        const loadStudioMoments = loadStudioStories;
+        const saveStudioMoment = saveStudioStory;
+        const deleteStudioMoment = deleteStudioStory;
+
+        window.saveStudioStory = saveStudioStory;
+        window.loadStudioStories = loadStudioStories;
+        window.deleteStudioStory = deleteStudioStory;
+        window.saveStudioMoment = saveStudioStory;
+        window.loadStudioMoments = loadStudioStories;
+        window.deleteStudioMoment = deleteStudioStory;
+        window.handleStoryMediaSelected = handleStoryMediaSelected;
+        window.prefillStoryWhatsApp = prefillStoryWhatsApp;
+
+        // ─────────────────────────────────────────────
+        // HERO FEATURE & SHOWCASE SETTINGS
+        // ─────────────────────────────────────────────
+        let cachedHeroData = null;
+
+        function updateHeroPreview() {
+            try {
+                const tagline = document.getElementById('heroTagline')?.value.trim() || 'Bespoke Contemporary Art';
+                const headline = document.getElementById('heroHeadline')?.value.trim() || 'Timeless Art for Modern Interiors';
+                const desc = document.getElementById('heroDescription')?.value.trim() || 'Original paintings and handcrafted resin artworks created to complement refined interiors.';
+                const badgeTitle = document.getElementById('heroBadgeTitle')?.value.trim() || 'Architectural Focus';
+                const badgeDesc = document.getElementById('heroBadgeDesc')?.value.trim() || 'Statement pieces tailored for high-end residential interiors';
+                const urlInput = document.getElementById('heroImgUrl')?.value.trim();
+
+                const pTag = document.getElementById('heroPreviewTag');
+                const pTitle = document.getElementById('heroPreviewTitle');
+                const pDesc = document.getElementById('heroPreviewDesc');
+                const pBadgeTitle = document.getElementById('heroPreviewBadgeTitle');
+                const pBadgeDesc = document.getElementById('heroPreviewBadgeDesc');
+                const pImg = document.getElementById('heroPreviewImg');
+
+                if (pTag) pTag.textContent = tagline;
+                if (pTitle) pTitle.textContent = headline;
+                if (pDesc) pDesc.textContent = desc;
+                if (pBadgeTitle) pBadgeTitle.textContent = badgeTitle;
+                if (pBadgeDesc) pBadgeDesc.textContent = badgeDesc;
+
+                const fileInput = document.getElementById('heroImgFile');
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    // Keep local uploaded image preview
+                } else if (urlInput && pImg) {
+                    pImg.src = resolveImageUrl(urlInput);
+                }
+            } catch (err) {
+                console.warn('updateHeroPreview error:', err);
+            }
+        }
+
+        async function loadHeroSettings() {
+            try {
+                let heroData = null;
+                let settingsHero = null;
+                let artworksHero = null;
+
+                // 1. Check site_settings table first
+                try {
+                    const { data: settingRow, error: setErr } = await db
+                        .from('site_settings')
+                        .select('value')
+                        .eq('key', 'hero_showcase')
+                        .maybeSingle();
+
+                    if (!setErr && settingRow && settingRow.value) {
+                        settingsHero = typeof settingRow.value === 'string' ? JSON.parse(settingRow.value) : settingRow.value;
+                    }
+                } catch (e) {}
+
+                // 2. Check artworks table for category = 'hero_showcase' or id = 'hero_main'
+                try {
+                    let { data: artHero, error: artErr } = await db
+                        .from('artworks')
+                        .select('*')
+                        .eq('category', 'hero_showcase')
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+
+                    if (!artHero) {
+                        try {
+                            const { data: byId } = await db
+                                .from('artworks')
+                                .select('*')
+                                .eq('id', 'hero_main')
+                                .limit(1)
+                                .maybeSingle();
+                            if (byId) artHero = byId;
+                        } catch (e) {}
+                    }
+
+                    if (artHero) {
+                        let meta = {};
+                        if (artHero.secondary_images) {
+                            try {
+                                if (typeof artHero.secondary_images === 'string') {
+                                    meta = JSON.parse(artHero.secondary_images);
+                                } else if (Array.isArray(artHero.secondary_images) && artHero.secondary_images.length > 0) {
+                                    meta = typeof artHero.secondary_images[0] === 'string' && artHero.secondary_images[0].startsWith('{')
+                                        ? JSON.parse(artHero.secondary_images[0])
+                                        : (typeof artHero.secondary_images[0] === 'object' ? artHero.secondary_images[0] : {});
+                                }
+                            } catch {}
+                        }
+
+                        artworksHero = {
+                            imageUrl: artHero.image_url || meta.imageUrl,
+                            badgeTitle: artHero.price || meta.badgeTitle || 'Architectural Focus',
+                            badgeDesc: artHero.size || meta.badgeDesc || 'Statement pieces tailored for high-end residential interiors',
+                            headline: artHero.name || meta.headline || 'Timeless Art for Modern Interiors',
+                            tagline: meta.tagline || 'Bespoke Contemporary Art',
+                            description: artHero.description || meta.description || 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
+                            updated_at: artHero.created_at || meta.updated_at
+                        };
+                    }
+                } catch (e) {}
+
+                // Choose newest configuration available
+                if (settingsHero && artworksHero) {
+                    const settingsTime = settingsHero.updated_at ? new Date(settingsHero.updated_at).getTime() : 0;
+                    const artworksTime = artworksHero.updated_at ? new Date(artworksHero.updated_at).getTime() : 0;
+                    heroData = artworksTime > settingsTime ? artworksHero : settingsHero;
+                } else {
+                    heroData = settingsHero || artworksHero;
+                }
+
+                // Default fallback if no custom configuration saved yet
+                if (!heroData) {
+                    heroData = {
+                        imageUrl: 'images/hero_luxury_interior.png',
+                        tagline: 'Bespoke Contemporary Art',
+                        headline: 'Timeless Art for Modern Interiors',
+                        description: 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
+                        badgeTitle: 'Architectural Focus',
+                        badgeDesc: 'Statement pieces tailored for high-end residential interiors'
+                    };
+                }
+
+                cachedHeroData = heroData;
+
+                // Populate form fields
+                if (document.getElementById('heroTagline')) document.getElementById('heroTagline').value = heroData.tagline || '';
+                if (document.getElementById('heroHeadline')) document.getElementById('heroHeadline').value = heroData.headline || '';
+                if (document.getElementById('heroDescription')) document.getElementById('heroDescription').value = heroData.description || '';
+                if (document.getElementById('heroBadgeTitle')) document.getElementById('heroBadgeTitle').value = heroData.badgeTitle || '';
+                if (document.getElementById('heroBadgeDesc')) document.getElementById('heroBadgeDesc').value = heroData.badgeDesc || '';
+                if (document.getElementById('heroImgUrl') && heroData.imageUrl && !heroData.imageUrl.startsWith('images/')) {
+                    document.getElementById('heroImgUrl').value = heroData.imageUrl;
+                }
+
+                // Update preview image & text with cache buster
+                const pImg = document.getElementById('heroPreviewImg');
+                if (pImg) {
+                    const previewUrl = resolveImageUrl(heroData.imageUrl || 'images/hero_luxury_interior.png');
+                    const sep = previewUrl.includes('?') ? '&' : '?';
+                    pImg.src = previewUrl.startsWith('data:') || previewUrl.startsWith('blob:')
+                        ? previewUrl
+                        : `${previewUrl}${sep}t=${Date.now()}`;
+                }
+                updateHeroPreview();
+
+            } catch (err) {
+                console.warn('Load hero settings note:', err);
+            }
+        }
+
+        async function saveHeroSettings() {
+            const btn = document.getElementById('save-hero-btn');
+            const toast = document.getElementById('hero-status-toast');
+            const origText = btn.innerText;
+
+            btn.innerText = 'SAVING HERO SETTINGS...';
+            btn.disabled = true;
+            if (toast) {
+                toast.style.display = 'none';
+                toast.className = 'hero-status-toast';
+            }
+
+            try {
+                const fileInput = document.getElementById('heroImgFile');
+                const file = fileInput.files[0];
+                const directUrl = document.getElementById('heroImgUrl').value.trim();
+
+                let activeImageUrl = directUrl;
+
+                // 1. If file uploaded, compress then upload to Supabase storage bucket
+                if (file) {
+                    const fileToUpload = await compressImageFile(file);
+                    const ext = fileToUpload.name.split('.').pop() || 'jpg';
+                    const filePath = `hero/hero_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+                    const { error: uploadError } = await db.storage
+                        .from('artworks')
+                        .upload(filePath, fileToUpload, {
+                            cacheControl: '3600',
+                            upsert: true,
+                            contentType: fileToUpload.type || 'image/jpeg'
+                        });
+
+                    if (uploadError) {
+                        throw new Error('Image upload failed: ' + uploadError.message);
+                    }
+
+                    const { data: urlData } = db.storage
+                        .from('artworks')
+                        .getPublicUrl(filePath);
+
+                    // getPublicUrl is sync and always returns the full CDN URL;
+                    // we also manually construct it as a guaranteed fallback.
+                    const sdkUrl = urlData?.publicUrl || '';
+                    activeImageUrl = sdkUrl.startsWith('https://')
+                        ? sdkUrl
+                        : resolveImageUrl(filePath);
+
+                    console.log('[Hero] File compressed & uploaded. Full CDN URL stored:', activeImageUrl);
+                }
+
+                // Retain existing URL if nothing new was provided
+                if (!activeImageUrl) {
+                    activeImageUrl = cachedHeroData?.imageUrl || 'images/hero_luxury_interior.png';
+                }
+
+                // Final safety pass: normalise to absolute URL regardless of origin
+                activeImageUrl = resolveImageUrl(activeImageUrl) || activeImageUrl;
+
+                const heroPayload = {
+                    imageUrl: activeImageUrl,
+                    tagline: document.getElementById('heroTagline').value.trim() || 'Bespoke Contemporary Art',
+                    headline: document.getElementById('heroHeadline').value.trim() || 'Timeless Art for Modern Interiors',
+                    description: document.getElementById('heroDescription').value.trim() || 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
+                    badgeTitle: document.getElementById('heroBadgeTitle').value.trim() || 'Architectural Focus',
+                    badgeDesc: document.getElementById('heroBadgeDesc').value.trim() || 'Statement pieces tailored for high-end residential interiors',
+                    updated_at: new Date().toISOString()
+                };
+
+                // Clear console confirmation of exact payload
+                console.log("Saved Hero Payload:", heroPayload);
+
+                // 1. Explicitly check whether site_settings table exists
+                let siteSettingsExists = false;
+                try {
+                    const { data: checkData, error: checkErr } = await db
+                        .from('site_settings')
+                        .select('key')
+                        .limit(1);
+
+                    if (!checkErr) {
+                        siteSettingsExists = true;
+                    } else {
+                        console.warn('[Hero] site_settings table check note (table may not exist):', checkErr.message);
+                    }
+                } catch (e) {
+                    console.warn('[Hero] Exception checking site_settings table:', e);
+                }
+
+                let savedToSettings = false;
+                if (siteSettingsExists) {
+                    try {
+                        const { error: setErr } = await db
+                            .from('site_settings')
+                            .upsert({
+                                key: 'hero_showcase',
+                                value: heroPayload,
+                                updated_at: heroPayload.updated_at
+                            }, { onConflict: 'key' });
+
+                        if (!setErr) {
+                            savedToSettings = true;
+                            console.log('[Hero] Successfully saved to site_settings table.');
+                        } else {
+                            console.warn('[Hero] Failed to upsert to site_settings table:', setErr.message);
+                        }
+                    } catch (e) {
+                        console.warn('[Hero] Exception upserting to site_settings:', e);
+                    }
+                }
+
+                // 2. Fallback / Synchronize to artworks table with category = 'hero_showcase' / id = 'hero_main'
+                let savedToArtworks = false;
+                const artRecord = {
+                    name: heroPayload.headline,
+                    price: heroPayload.badgeTitle,
+                    size: heroPayload.badgeDesc,
+                    category: 'hero_showcase',
+                    image_url: heroPayload.imageUrl,
+                    description: heroPayload.description,
+                    secondary_images: [JSON.stringify(heroPayload)]
+                };
+
+                let targetId = null;
+                try {
+                    const { data: heroByCat } = await db
+                        .from('artworks')
+                        .select('id')
+                        .eq('category', 'hero_showcase')
+                        .limit(1)
+                        .maybeSingle();
+
+                    if (heroByCat?.id) targetId = heroByCat.id;
+                } catch (e) {}
+
+                if (!targetId) {
+                    try {
+                        const { data: heroById } = await db
+                            .from('artworks')
+                            .select('id')
+                            .eq('id', 'hero_main')
+                            .limit(1)
+                            .maybeSingle();
+
+                        if (heroById?.id) targetId = heroById.id;
+                    } catch (e) {}
+                }
+
+                if (targetId) {
+                    let { error: updateErr } = await db
+                        .from('artworks')
+                        .update(artRecord)
+                        .eq('id', targetId);
+
+                    // If secondary_images as array fails, fallback with string
+                    if (updateErr && updateErr.message && updateErr.message.includes('secondary_images')) {
+                        const fallbackRecord = { ...artRecord, secondary_images: JSON.stringify(heroPayload) };
+                        const res2 = await db.from('artworks').update(fallbackRecord).eq('id', targetId);
+                        updateErr = res2.error;
+                    }
+
+                    if (!updateErr) {
+                        savedToArtworks = true;
+                        console.log('[Hero] Successfully updated artworks record id:', targetId);
+                    } else {
+                        console.warn('[Hero] Error updating artworks record:', updateErr.message);
+                    }
+                } else {
+                    // Insert new record (try with id 'hero_main', fallback to auto-generated id)
+                    let insertErr = null;
+                    try {
+                        const resWithId = await db.from('artworks').insert([{ id: 'hero_main', ...artRecord }]);
+                        insertErr = resWithId.error;
+                    } catch (e) {
+                        insertErr = e;
+                    }
+
+                    if (insertErr) {
+                        const resAuto = await db.from('artworks').insert([artRecord]);
+                        if (!resAuto.error) {
+                            savedToArtworks = true;
+                            console.log('[Hero] Successfully inserted artworks record with auto id.');
+                        } else {
+                            console.warn('[Hero] Error inserting artworks record:', resAuto.error.message);
+                        }
+                    } else {
+                        savedToArtworks = true;
+                        console.log('[Hero] Successfully inserted artworks record with id "hero_main".');
+                    }
+                }
+
+                if (!savedToSettings && !savedToArtworks) {
+                    throw new Error('Unable to persist settings to site_settings or artworks table. Please verify Supabase permissions.');
+                }
+
+                cachedHeroData = heroPayload;
+
+                // Reset file input label
+                fileInput.value = '';
+                document.getElementById('hero-file-label-text').innerText = 'Select Hero Image';
+                if (document.getElementById('heroImgUrl')) {
+                    document.getElementById('heroImgUrl').value = activeImageUrl.startsWith('images/') ? '' : activeImageUrl;
+                }
+
+                // Update preview image with cache buster
+                const pImg = document.getElementById('heroPreviewImg');
+                if (pImg) {
+                    const previewUrl = resolveImageUrl(activeImageUrl);
+                    const sep = previewUrl.includes('?') ? '&' : '?';
+                    pImg.src = previewUrl.startsWith('data:') || previewUrl.startsWith('blob:')
+                        ? previewUrl
+                        : `${previewUrl}${sep}t=${Date.now()}`;
+                }
+                updateHeroPreview();
+
+                const destination = savedToSettings && savedToArtworks
+                    ? 'site_settings and artworks tables'
+                    : (savedToSettings ? 'site_settings table' : 'artworks table (fallback)');
+
+                if (toast) {
+                    toast.className = 'hero-status-toast success';
+                    toast.innerText = `✓ Hero showcase settings saved to ${destination} and synchronized live!`;
+                }
+
+                alert(`✓ Hero settings successfully saved!\n\nDestination: ${destination}\n• Headline: ${heroPayload.headline}\n• Tagline: ${heroPayload.tagline}\n• Badge: ${heroPayload.badgeTitle}\n• Image: ${heroPayload.imageUrl}`);
+
+            } catch (err) {
+                console.error('Error saving hero settings:', err);
+                if (toast) {
+                    toast.className = 'hero-status-toast error';
+                    toast.innerText = 'Failed to save hero settings: ' + err.message;
+                }
+                alert('Failed to save hero settings: ' + err.message);
+            } finally {
+                btn.innerText = origText;
+                btn.disabled = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────
+        // FILE INPUTS — update label with selected filename(s)
+        // ─────────────────────────────────────────────
+        document.getElementById('newImgMain').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            document.getElementById('file-label-text-main').innerText = file
+                ? file.name
+                : 'Select Main Photo';
+        });
+
+        document.getElementById('newImgSecondary').addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                document.getElementById('file-label-text-secondary').innerText = `${files.length} file(s) selected`;
+            } else {
+                document.getElementById('file-label-text-secondary').innerText = 'Select Additional Showcase Photos';
+            }
+        });
+
+        const momentFileInput = document.getElementById('momentImgFile');
+        if (momentFileInput) {
+            momentFileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                document.getElementById('moment-file-label-text').innerText = file
+                    ? file.name
+                    : 'Select Studio Photo';
+            });
+        }
+
+        const heroFileInput = document.getElementById('heroImgFile');
+        if (heroFileInput) {
+            heroFileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                document.getElementById('hero-file-label-text').innerText = file
+                    ? file.name
+                    : 'Select Hero Image';
+
+                if (file) {
+                    const previewImg = document.getElementById('heroPreviewImg');
+                    if (previewImg) {
+                        previewImg.src = URL.createObjectURL(file);
+                    }
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────
+        // BOOT
+        // ─────────────────────────────────────────────
+        checkSession();
+    </script>
+</body>
+</html>
