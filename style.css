@@ -739,8 +739,17 @@ img {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
 }
 
+.hero-badge:empty,
+.hero-overlay-box:empty,
 .hero-badge[hidden],
-.hero-badge.is-hidden {
+.hero-badge.is-hidden,
+.hero-content-overlay .hero-badge.is-hidden,
+.hero-badge[style*="display: none"],
+.hero-badge[style*="display:none"],
+.hero-content-overlay .hero-badge[style*="display: none"],
+.hero-content-overlay .hero-badge[style*="display:none"],
+.hero-overlay-box[hidden],
+.hero-overlay-box.is-hidden {
     display: none !important;
 }
 
@@ -1701,9 +1710,10 @@ img {
     }
 
     .hero-content-overlay .hero-title {
-        font-size: clamp(2.3rem, 8.5vw, 3.4rem);
-        margin-bottom: 16px;
-        line-height: 1.15;
+        font-size: clamp(1.85rem, 6.8vw, 2.35rem) !important;
+        margin-bottom: 18px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
     }
 
     .hero-content-overlay .hero-description {
@@ -1734,6 +1744,18 @@ img {
         margin-right: 0;
         max-width: 100%;
         padding: 14px 18px;
+    }
+
+    .hero-badge.is-hidden,
+    .hero-content-overlay .hero-badge.is-hidden,
+    .hero-badge[style*="display: none"],
+    .hero-badge[style*="display:none"],
+    .hero-content-overlay .hero-badge[style*="display: none"],
+    .hero-content-overlay .hero-badge[style*="display:none"],
+    .hero-content-overlay .hero-badge:empty,
+    .hero-badge:empty,
+    .hero-overlay-box:empty {
+        display: none !important;
     }
 
     .hero-section {
@@ -3147,5 +3169,9 @@ img {
         margin-right: 8px;
         max-width: calc(100% - 16px);
         padding: 14px 16px;
+    }
+    .hero-badge.is-hidden,
+    .hero-content-overlay .hero-badge.is-hidden {
+        display: none !important;
     }
 }

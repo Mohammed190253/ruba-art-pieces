@@ -278,9 +278,9 @@
                             
                             <div class="hero-preview-screen">
                                 <img id="heroPreviewImg" src="images/hero_luxury_interior.png" alt="Showcase Preview" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80'">
-                                <div class="hero-preview-badge-overlay">
-                                    <div class="hero-preview-badge-title" id="heroPreviewBadgeTitle">Architectural Focus</div>
-                                    <div class="hero-preview-badge-desc" id="heroPreviewBadgeDesc">Statement pieces tailored for high-end residential interiors</div>
+                                <div class="hero-preview-badge-overlay" id="heroPreviewBadgeOverlay" style="display:none;">
+                                    <div class="hero-preview-badge-title" id="heroPreviewBadgeTitle"></div>
+                                    <div class="hero-preview-badge-desc" id="heroPreviewBadgeDesc"></div>
                                 </div>
                             </div>
 
@@ -1723,6 +1723,25 @@
                     } catch (e) {}
                 }
 
+                // 3. artworks table (category studio-moments)
+                if (stories.length === 0) {
+                    try {
+                        const { data: artData } = await db.from('artworks').select('*')
+                            .in('category', ['studio-moments', 'studio_moments'])
+                            .order('created_at', { ascending: false });
+                        if (artData && artData.length > 0) {
+                            stories = artData.map(a => ({
+                                id: a.id,
+                                title: a.name || 'Studio Story',
+                                media_url: a.image_url,
+                                link_url: a.price && String(a.price).startsWith('http') ? a.price : null,
+                                created_at: a.created_at,
+                                source_table: 'artworks'
+                            }));
+                        }
+                    } catch (e) {}
+                }
+
                 if (countBadge) {
                     countBadge.innerText = stories.length;
                     countBadge.style.display = stories.length > 0 ? 'inline-block' : 'none';
@@ -1734,7 +1753,7 @@
                     container.innerHTML = `
                         <div style="grid-column: 1 / -1; padding: 25px; text-align: center; color: var(--text-muted); background: var(--bg-secondary); border-radius: 8px;">
                             <p style="margin: 0; font-size: 0.9rem;">No custom studio stories published yet.</p>
-                            <p style="margin: 6px 0 0; font-size: 0.8rem; color: var(--accent-gold);">The homepage is currently displaying curated default studio moments.</p>
+                            <p style="margin: 6px 0 0; font-size: 0.8rem; color: var(--accent-gold);">The Studio Moments bar is hidden on the homepage until you publish a story.</p>
                         </div>
                     `;
                     return;
@@ -1843,8 +1862,8 @@
                 const tagline = document.getElementById('heroTagline')?.value.trim() || 'Bespoke Contemporary Art';
                 const headline = document.getElementById('heroHeadline')?.value.trim() || 'Timeless Art for Modern Interiors';
                 const desc = document.getElementById('heroDescription')?.value.trim() || 'Original paintings and handcrafted resin artworks created to complement refined interiors.';
-                const badgeTitle = document.getElementById('heroBadgeTitle')?.value.trim() || 'Architectural Focus';
-                const badgeDesc = document.getElementById('heroBadgeDesc')?.value.trim() || 'Statement pieces tailored for high-end residential interiors';
+                const badgeTitle = document.getElementById('heroBadgeTitle')?.value.trim() || '';
+                const badgeDesc = document.getElementById('heroBadgeDesc')?.value.trim() || '';
                 const urlInput = document.getElementById('heroImgUrl')?.value.trim();
 
                 const pTag = document.getElementById('heroPreviewTag');
@@ -1859,6 +1878,10 @@
                 if (pDesc) pDesc.textContent = desc;
                 if (pBadgeTitle) pBadgeTitle.textContent = badgeTitle;
                 if (pBadgeDesc) pBadgeDesc.textContent = badgeDesc;
+                const pOverlay = document.getElementById('heroPreviewBadgeOverlay') || document.querySelector('.hero-preview-badge-overlay');
+                if (pOverlay) {
+                    pOverlay.style.display = (!badgeTitle && !badgeDesc) ? 'none' : 'block';
+                }
 
                 const fileInput = document.getElementById('heroImgFile');
                 if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -1928,8 +1951,8 @@
 
                         artworksHero = {
                             imageUrl: artHero.image_url || meta.imageUrl,
-                            badgeTitle: artHero.price || meta.badgeTitle || 'Architectural Focus',
-                            badgeDesc: artHero.size || meta.badgeDesc || 'Statement pieces tailored for high-end residential interiors',
+                            badgeTitle: (artHero.price !== null && artHero.price !== undefined) ? artHero.price : (meta.badgeTitle !== undefined ? meta.badgeTitle : ''),
+                            badgeDesc: (artHero.size !== null && artHero.size !== undefined) ? artHero.size : (meta.badgeDesc !== undefined ? meta.badgeDesc : ''),
                             headline: artHero.name || meta.headline || 'Timeless Art for Modern Interiors',
                             tagline: meta.tagline || 'Bespoke Contemporary Art',
                             description: artHero.description || meta.description || 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
@@ -1954,8 +1977,8 @@
                         tagline: 'Bespoke Contemporary Art',
                         headline: 'Timeless Art for Modern Interiors',
                         description: 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
-                        badgeTitle: 'Architectural Focus',
-                        badgeDesc: 'Statement pieces tailored for high-end residential interiors'
+                        badgeTitle: '',
+                        badgeDesc: ''
                     };
                 }
 
@@ -2051,8 +2074,8 @@
                     tagline: document.getElementById('heroTagline').value.trim() || 'Bespoke Contemporary Art',
                     headline: document.getElementById('heroHeadline').value.trim() || 'Timeless Art for Modern Interiors',
                     description: document.getElementById('heroDescription').value.trim() || 'Original paintings and handcrafted resin artworks created to complement refined interiors.',
-                    badgeTitle: document.getElementById('heroBadgeTitle').value.trim() || 'Architectural Focus',
-                    badgeDesc: document.getElementById('heroBadgeDesc').value.trim() || 'Statement pieces tailored for high-end residential interiors',
+                    badgeTitle: document.getElementById('heroBadgeTitle').value.trim(),
+                    badgeDesc: document.getElementById('heroBadgeDesc').value.trim(),
                     updated_at: new Date().toISOString()
                 };
 

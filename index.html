@@ -91,10 +91,10 @@
                         <a href="#commissions" class="secondary-btn">Commission a Piece</a>
                     </div>
                     
-                    <!-- Conditional Architectural Focus Badge (Auto-hides when empty) -->
-                    <div class="hero-badge" id="hero-badge-container">
-                        <div class="hero-badge-title" id="hero-badge-title">Architectural Focus</div>
-                        <div class="hero-badge-desc" id="hero-badge-desc">Statement pieces tailored for high-end residential interiors</div>
+                    <!-- Conditional Badge (auto-hides when both fields are empty) -->
+                    <div class="hero-badge" id="hero-badge-container" style="display:none;">
+                        <div class="hero-badge-title" id="hero-badge-title"></div>
+                        <div class="hero-badge-desc" id="hero-badge-desc"></div>
                     </div>
                 </div>
             </div>
@@ -537,8 +537,8 @@
             const badgeTitleEl = document.getElementById('hero-badge-title');
             const badgeDescEl = document.getElementById('hero-badge-desc');
 
-            const cleanTitle = (title !== undefined ? title : (badgeTitleEl ? badgeTitleEl.innerText : '')).trim();
-            const cleanDesc = (desc !== undefined ? desc : (badgeDescEl ? badgeDescEl.innerText : '')).trim();
+            const cleanTitle = (title !== undefined && title !== null ? String(title) : (badgeTitleEl ? badgeTitleEl.innerText : '')).trim();
+            const cleanDesc = (desc !== undefined && desc !== null ? String(desc) : (badgeDescEl ? badgeDescEl.innerText : '')).trim();
 
             if (badgeTitleEl) {
                 badgeTitleEl.innerText = cleanTitle;
@@ -632,8 +632,8 @@
                         const artBadgeTitle = artHero.price !== null && artHero.price !== undefined ? artHero.price : undefined;
                         const artBadgeDesc = artHero.size !== null && artHero.size !== undefined ? artHero.size : undefined;
 
-                        const loadedBadgeTitle = metaBadgeTitle !== undefined ? metaBadgeTitle : (artBadgeTitle !== undefined ? artBadgeTitle : 'Architectural Focus');
-                        const loadedBadgeDesc = metaBadgeDesc !== undefined ? metaBadgeDesc : (artBadgeDesc !== undefined ? artBadgeDesc : 'Statement pieces tailored for high-end residential interiors');
+                        const loadedBadgeTitle = metaBadgeTitle !== undefined ? metaBadgeTitle : (artBadgeTitle !== undefined ? artBadgeTitle : '');
+                        const loadedBadgeDesc = metaBadgeDesc !== undefined ? metaBadgeDesc : (artBadgeDesc !== undefined ? artBadgeDesc : '');
 
                         artworksHero = {
                             imageUrl: artHero.image_url || meta.imageUrl,
@@ -927,47 +927,9 @@
                 `;
             }
         }
-
         // ─────────────────────────────────────────────────────────────
         // 2B. STUDIO MOMENTS (ARTIST STORIES) SYSTEM & FULLSCREEN VIEWER
         // ─────────────────────────────────────────────────────────────
-        const DEFAULT_STUDIO_STORIES = [
-            {
-                id: 'def-story-1',
-                title: 'Atelier Motion',
-                media_url: 'images/VID-20250920-WA0016.mp4',
-                link_url: 'https://wa.me/962790692555?text=Hello%20Ruba,%20I%20am%20inquiring%20about%20your%20Atelier%20Motion%20process.',
-                created_at: new Date().toISOString()
-            },
-            {
-                id: 'def-story-2',
-                title: 'Golden Shadows',
-                media_url: 'images/collection_golden_shadows.png',
-                link_url: 'https://wa.me/962790692555?text=Hello%20Ruba,%20I%20am%20inquiring%20about%20the%20Golden%20Shadows%20piece.',
-                created_at: new Date().toISOString()
-            },
-            {
-                id: 'def-story-3',
-                title: 'Private Placement',
-                media_url: 'images/hero_luxury_interior.png',
-                link_url: 'https://wa.me/962790692555?text=Hello%20Ruba,%20I%20saw%20the%20Private%20Placement%20interior%20installation.',
-                created_at: new Date().toISOString()
-            },
-            {
-                id: 'def-story-4',
-                title: 'Nocturne Noir',
-                media_url: 'images/collection_black.png',
-                link_url: 'https://wa.me/962790692555?text=Hello%20Ruba,%20I%20am%20interested%20in%20the%20Nocturne%20Noir%20artwork.',
-                created_at: new Date().toISOString()
-            },
-            {
-                id: 'def-story-5',
-                title: 'Mineral Glaze',
-                media_url: 'images/collection_earth_stone.png',
-                link_url: 'https://wa.me/962790692555?text=Hello%20Ruba,%20I%20would%20like%20to%20know%20more%20about%20the%20Mineral%20Glaze%20study.',
-                created_at: new Date().toISOString()
-            }
-        ];
 
         let currentStudioStories = [];
         let activeStoryIndex = 0;
@@ -984,65 +946,67 @@
         }
 
         async function loadStudioStories() {
-            const track = document.getElementById('stories-track');
-            if (!track) return;
+    const track = document.getElementById('stories-track');
+    const section = document.getElementById('studio-moments-section');
+    if (!track) return;
 
-            try {
-                let supabaseStories = [];
-                try {
-                    const nowIso = new Date().toISOString();
-                    const { data, error } = await db
-                        .from('studio_stories')
-                        .select('*')
-                        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-                        .order('created_at', { ascending: false });
+    let stories = [];
+    const nowIso = new Date().toISOString();
 
-                    if (!error && Array.isArray(data)) {
-                        supabaseStories = data;
-                    }
-                } catch (queryErr) {
-                    console.warn('[Studio Stories] Database note:', queryErr);
-                }
+    // 1. Main table
+    try {
+        const { data, error } = await db
+            .from('studio_stories')
+            .select('*')
+            .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+            .order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) stories = data;
+    } catch (e) { console.warn('[Studio Stories] studio_stories:', e); }
 
-                // Fallback check from studio_moments if studio_stories is empty
-                if (supabaseStories.length === 0) {
-                    try {
-                        const { data: momData } = await db
-                            .from('studio_moments')
-                            .select('*')
-                            .order('created_at', { ascending: false });
-                        if (momData && momData.length > 0) {
-                            supabaseStories = momData.map(m => ({
-                                id: m.id,
-                                title: m.title || 'Studio Story',
-                                media_url: m.image_url,
-                                link_url: m.caption && m.caption.startsWith('http') ? m.caption : null,
-                                created_at: m.created_at
-                            }));
-                        }
-                    } catch (e) {}
-                }
-
-                // MERGE LOGIC: Newly published Supabase stories first, followed by curated default stories
-                const storyMap = new Map();
-                (supabaseStories || []).forEach(story => {
-                    if (story && story.id) storyMap.set(story.id, story);
-                });
-                (DEFAULT_STUDIO_STORIES || []).forEach(story => {
-                    if (story && story.id && !storyMap.has(story.id)) {
-                        storyMap.set(story.id, story);
-                    }
-                });
-
-                currentStudioStories = Array.from(storyMap.values());
-                renderStoriesBar(currentStudioStories);
-
-            } catch (err) {
-                console.error('[Studio Stories] Error loading stories:', err);
-                currentStudioStories = DEFAULT_STUDIO_STORIES;
-                renderStoriesBar(currentStudioStories);
+    // 2. Fallback table
+    if (stories.length === 0) {
+        try {
+            const { data } = await db.from('studio_moments').select('*').order('created_at', { ascending: false });
+            if (data && data.length > 0) {
+                stories = data.map(m => ({
+                    id: m.id,
+                    title: m.title || 'Studio Story',
+                    media_url: m.image_url,
+                    link_url: m.caption && m.caption.startsWith('http') ? m.caption : null,
+                    created_at: m.created_at
+                }));
             }
-        }
+        } catch (e) {}
+    }
+
+    // 3. Last fallback: artworks table, category studio-moments
+    if (stories.length === 0) {
+        try {
+            const { data } = await db.from('artworks').select('*')
+                .in('category', ['studio-moments', 'studio_moments'])
+                .order('created_at', { ascending: false });
+            if (data && data.length > 0) {
+                stories = data.map(a => ({
+                    id: a.id,
+                    title: a.name || 'Studio Story',
+                    media_url: a.image_url,
+                    link_url: a.price && String(a.price).startsWith('http') ? a.price : null,
+                    created_at: a.created_at
+                }));
+            }
+        } catch (e) {}
+    }
+
+    currentStudioStories = stories;
+
+    // No stories: hide the entire Studio Moments section (no defaults)
+    if (stories.length === 0) {
+        if (section) section.style.display = 'none';
+        return;
+    }
+    if (section) section.style.display = '';
+    renderStoriesBar(stories);
+}
 
         function renderStoriesBar(stories) {
             const track = document.getElementById('stories-track');
