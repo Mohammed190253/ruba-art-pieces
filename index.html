@@ -10,6 +10,7 @@
     <meta name="keywords" content="luxury resin art, contemporary paintings, bespoke interior art, luxury art studio, statement artwork, architectural art">
     
     <link rel="stylesheet" href="style.css">
+    <link rel="preload" as="image" href="images/hero_luxury_interior.png">
     
     <!-- Google Fonts: Cormorant Garamond & Manrope -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,8 +24,8 @@
     <div class="cursor-glow" id="cursor-glow"></div>
 
 
-    <!-- Sticky Transparent Luxury Header -->
-    <header class="main-header" id="header">
+    <!-- Transparent Luxury Header (Overlaid over Full-Bleed Hero) -->
+    <header class="main-header header-overlay" id="header">
         <div class="container header-container">
             <div class="header-logo" id="site-logo">
                 <a href="index.html" ondblclick="window.location.href='admin.html'; return false;">
@@ -72,7 +73,34 @@
     <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" onclick="toggleMobileNav(false)"></div>
 
     <main>
-        <!-- Studio Moments (Artist Stories) Bar -->
+        <!-- Full-Bleed Merged Hero Section (rawanbags.store Style) -->
+        <section class="hero-section hero-fullbleed" id="hero">
+            <!-- Full-Bleed Artwork Background & Luxury Dark Gradient Overlay -->
+            <div class="hero-bg-wrapper">
+                <img src="images/hero_luxury_interior.png" alt="Luxury Architectural Interior with Statement Artwork" id="hero-img" class="hero-bg-img" onerror="handleHeroImageError(this)">
+                <div class="hero-bg-overlay"></div>
+            </div>
+
+            <div class="container hero-container">
+                <div class="hero-content-overlay">
+                    <span class="hero-tag" id="hero-tag">Bespoke Contemporary Art</span>
+                    <h1 class="hero-title" id="hero-title">Timeless Art for <em>Modern Interiors</em></h1>
+                    <p class="hero-description" id="hero-desc">Original paintings and handcrafted resin artworks created to complement refined interiors.</p>
+                    <div class="hero-buttons">
+                        <a href="gallery.html" class="primary-btn">View Collections</a>
+                        <a href="#commissions" class="secondary-btn">Commission a Piece</a>
+                    </div>
+                    
+                    <!-- Conditional Architectural Focus Badge (Auto-hides when empty) -->
+                    <div class="hero-badge" id="hero-badge-container">
+                        <div class="hero-badge-title" id="hero-badge-title">Architectural Focus</div>
+                        <div class="hero-badge-desc" id="hero-badge-desc">Statement pieces tailored for high-end residential interiors</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Studio Moments (Artist Stories) Bar directly below Hero -->
         <section class="studio-moments-section studio-moments studio-moments-container" id="studio-moments-section">
             <div class="container">
                 <div class="stories-header">
@@ -92,33 +120,6 @@
                         <!-- Loaded dynamically -->
                     </div>
                     <button type="button" class="stories-scroll-arrow right" id="stories-scroll-right" onclick="scrollStoriesTrack(220)" aria-label="Scroll right">&#8250;</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Hero Section (~90vh view height) -->
-        <section class="hero-section" id="hero">
-            <div class="container">
-                <div class="hero-grid">
-                    <div class="hero-content">
-                        <span class="hero-tag" id="hero-tag">Bespoke Contemporary Art</span>
-                        <h1 class="hero-title" id="hero-title">Timeless Art for <em>Modern Interiors</em></h1>
-                        <p class="hero-description" id="hero-desc">Original paintings and handcrafted resin artworks created to complement refined interiors.</p>
-                        <div class="hero-buttons">
-                            <a href="gallery.html" class="primary-btn">View Collections</a>
-                            <a href="#commissions" class="secondary-btn">Commission a Piece</a>
-                        </div>
-                    </div>
-                    
-                    <div class="hero-media-wrapper">
-                        <div class="hero-media-frame">
-                            <img src="images/hero_luxury_interior.png" alt="Luxury Architectural Interior with Statement Artwork" id="hero-img" onerror="handleHeroImageError(this)">
-                        </div>
-                        <div class="hero-badge">
-                            <div class="hero-badge-title" id="hero-badge-title">Architectural Focus</div>
-                            <div class="hero-badge-desc" id="hero-badge-desc">Statement pieces tailored for high-end residential interiors</div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -456,9 +457,10 @@
             });
 
             // Initialize dynamic data fetches from Supabase & content hydration
+            updateHeroBadgeVisibility();
             loadHeroShowcase();
             loadStudioStories();
-            renderAboutStudio();
+            loadAboutStudio();
             loadFeaturedArtworks();
         });
 
@@ -481,6 +483,18 @@
             if(glow) {
                 glow.style.left = e.clientX + 'px';
                 glow.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Transparent Header Scroll Transition
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header') || document.querySelector('.main-header');
+            if (header && header.classList.contains('header-overlay')) {
+                if (window.scrollY > 60) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
             }
         });
 
@@ -517,9 +531,49 @@
             imgEl.src = cdnFallback;
         }
 
+        // Hero showcase overlay badge visibility controller
+        function updateHeroBadgeVisibility(title, desc) {
+            const badgeContainer = document.getElementById('hero-badge-container') || document.querySelector('.hero-badge');
+            const badgeTitleEl = document.getElementById('hero-badge-title');
+            const badgeDescEl = document.getElementById('hero-badge-desc');
+
+            const cleanTitle = (title !== undefined ? title : (badgeTitleEl ? badgeTitleEl.innerText : '')).trim();
+            const cleanDesc = (desc !== undefined ? desc : (badgeDescEl ? badgeDescEl.innerText : '')).trim();
+
+            if (badgeTitleEl) {
+                badgeTitleEl.innerText = cleanTitle;
+                badgeTitleEl.style.display = cleanTitle ? '' : 'none';
+            }
+            if (badgeDescEl) {
+                badgeDescEl.innerText = cleanDesc;
+                badgeDescEl.style.display = cleanDesc ? '' : 'none';
+            }
+
+            if (badgeContainer) {
+                if (!cleanTitle && !cleanDesc) {
+                    badgeContainer.style.display = 'none';
+                    badgeContainer.classList.add('is-hidden');
+                } else {
+                    badgeContainer.style.display = '';
+                    badgeContainer.classList.remove('is-hidden');
+                }
+            }
+        }
+
         // 0. DYNAMIC HERO SHOWCASE MANAGEMENT
         async function loadHeroShowcase() {
             try {
+                // Apply locally cached configuration first to eliminate visual flicker
+                try {
+                    const localHero = localStorage.getItem('ruba_cached_hero');
+                    if (localHero) {
+                        const parsed = JSON.parse(localHero);
+                        if (parsed && (parsed.badgeTitle !== undefined || parsed.badgeDesc !== undefined)) {
+                            updateHeroBadgeVisibility(parsed.badgeTitle, parsed.badgeDesc);
+                        }
+                    }
+                } catch (e) {}
+
                 let heroData = null;
                 let settingsHero = null;
                 let artworksHero = null;
@@ -573,10 +627,18 @@
                             } catch {}
                         }
 
+                        const metaBadgeTitle = meta && meta.badgeTitle !== undefined ? meta.badgeTitle : undefined;
+                        const metaBadgeDesc = meta && meta.badgeDesc !== undefined ? meta.badgeDesc : undefined;
+                        const artBadgeTitle = artHero.price !== null && artHero.price !== undefined ? artHero.price : undefined;
+                        const artBadgeDesc = artHero.size !== null && artHero.size !== undefined ? artHero.size : undefined;
+
+                        const loadedBadgeTitle = metaBadgeTitle !== undefined ? metaBadgeTitle : (artBadgeTitle !== undefined ? artBadgeTitle : 'Architectural Focus');
+                        const loadedBadgeDesc = metaBadgeDesc !== undefined ? metaBadgeDesc : (artBadgeDesc !== undefined ? artBadgeDesc : 'Statement pieces tailored for high-end residential interiors');
+
                         artworksHero = {
                             imageUrl: artHero.image_url || meta.imageUrl,
-                            badgeTitle: artHero.price || meta.badgeTitle || 'Architectural Focus',
-                            badgeDesc: artHero.size || meta.badgeDesc || 'Statement pieces tailored for high-end residential interiors',
+                            badgeTitle: loadedBadgeTitle,
+                            badgeDesc: loadedBadgeDesc,
                             headline: artHero.name || meta.headline,
                             tagline: meta.tagline,
                             description: artHero.description || meta.description,
@@ -619,14 +681,18 @@
                 }
 
                 if (heroData) {
-                    if (heroData.badgeTitle) {
-                        const el = document.getElementById('hero-badge-title');
-                        if (el) el.innerText = heroData.badgeTitle;
-                    }
-                    if (heroData.badgeDesc) {
-                        const el = document.getElementById('hero-badge-desc');
-                        if (el) el.innerText = heroData.badgeDesc;
-                    }
+                    const bTitle = heroData.badgeTitle !== undefined ? heroData.badgeTitle : undefined;
+                    const bDesc = heroData.badgeDesc !== undefined ? heroData.badgeDesc : undefined;
+                    updateHeroBadgeVisibility(bTitle, bDesc);
+
+                    try {
+                        localStorage.setItem('ruba_cached_hero', JSON.stringify({
+                            badgeTitle: heroData.badgeTitle,
+                            badgeDesc: heroData.badgeDesc,
+                            imageUrl: heroData.imageUrl
+                        }));
+                    } catch (e) {}
+
                     if (heroData.tagline) {
                         const el = document.getElementById('hero-tag');
                         if (el) el.innerText = heroData.tagline;
@@ -639,6 +705,8 @@
                         const el = document.getElementById('hero-desc');
                         if (el) el.innerText = heroData.description;
                     }
+                } else {
+                    updateHeroBadgeVisibility();
                 }
 
             } catch (err) {
@@ -667,9 +735,10 @@
             ]
         };
 
-        function renderAboutStudio() {
+        function renderAboutStudio(customData) {
             try {
-                if (!ABOUT_STUDIO_CONTENT) return;
+                const data = customData || ABOUT_STUDIO_CONTENT;
+                if (!data) return;
                 const imgEl = document.getElementById('about-studio-img');
                 const subEl = document.getElementById('about-studio-subtitle');
                 const titleEl = document.getElementById('about-studio-title');
@@ -680,23 +749,103 @@
                 const pTitle2 = document.getElementById('about-pillar-title-2');
                 const pDesc2 = document.getElementById('about-pillar-desc-2');
 
-                if (imgEl && ABOUT_STUDIO_CONTENT.image) {
-                    imgEl.src = resolveImageUrl(ABOUT_STUDIO_CONTENT.image);
-                    if (ABOUT_STUDIO_CONTENT.imageAlt) imgEl.alt = ABOUT_STUDIO_CONTENT.imageAlt;
+                if (imgEl && data.image) {
+                    imgEl.src = resolveImageUrl(data.image);
+                    if (data.imageAlt) imgEl.alt = data.imageAlt;
                 }
-                if (subEl && ABOUT_STUDIO_CONTENT.subtitle) subEl.textContent = ABOUT_STUDIO_CONTENT.subtitle;
-                if (titleEl && ABOUT_STUDIO_CONTENT.title) titleEl.textContent = ABOUT_STUDIO_CONTENT.title;
-                if (quoteEl && ABOUT_STUDIO_CONTENT.quote) quoteEl.textContent = ABOUT_STUDIO_CONTENT.quote;
-                if (descEl && ABOUT_STUDIO_CONTENT.description) descEl.textContent = ABOUT_STUDIO_CONTENT.description;
+                if (subEl && data.subtitle) subEl.textContent = data.subtitle;
+                if (titleEl && data.title) titleEl.textContent = data.title;
+                if (quoteEl && data.quote) quoteEl.textContent = data.quote;
+                if (descEl && data.description) descEl.textContent = data.description;
 
-                if (Array.isArray(ABOUT_STUDIO_CONTENT.pillars)) {
-                    if (pTitle1 && ABOUT_STUDIO_CONTENT.pillars[0]?.title) pTitle1.textContent = ABOUT_STUDIO_CONTENT.pillars[0].title;
-                    if (pDesc1 && ABOUT_STUDIO_CONTENT.pillars[0]?.desc) pDesc1.textContent = ABOUT_STUDIO_CONTENT.pillars[0].desc;
-                    if (pTitle2 && ABOUT_STUDIO_CONTENT.pillars[1]?.title) pTitle2.textContent = ABOUT_STUDIO_CONTENT.pillars[1].title;
-                    if (pDesc2 && ABOUT_STUDIO_CONTENT.pillars[1]?.desc) pDesc2.textContent = ABOUT_STUDIO_CONTENT.pillars[1].desc;
-                }
+                const p1T = data.pillarTitle1 || (Array.isArray(data.pillars) ? data.pillars[0]?.title : null);
+                const p1D = data.pillarDesc1 || (Array.isArray(data.pillars) ? data.pillars[0]?.desc : null);
+                const p2T = data.pillarTitle2 || (Array.isArray(data.pillars) ? data.pillars[1]?.title : null);
+                const p2D = data.pillarDesc2 || (Array.isArray(data.pillars) ? data.pillars[1]?.desc : null);
+
+                if (pTitle1 && p1T) pTitle1.textContent = p1T;
+                if (pDesc1 && p1D) pDesc1.textContent = p1D;
+                if (pTitle2 && p2T) pTitle2.textContent = p2T;
+                if (pDesc2 && p2D) pDesc2.textContent = p2D;
             } catch (err) {
                 console.warn('About Studio content hydration note:', err);
+            }
+        }
+
+        async function loadAboutStudio() {
+            // 1. Immediately hydrate with locally cached about data if present
+            try {
+                const cached = localStorage.getItem('ruba_cached_about');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (parsed) renderAboutStudio(parsed);
+                } else {
+                    renderAboutStudio(ABOUT_STUDIO_CONTENT);
+                }
+            } catch (e) {
+                renderAboutStudio(ABOUT_STUDIO_CONTENT);
+            }
+
+            // 2. Query Supabase for custom edits
+            try {
+                let aboutData = null;
+
+                // Check site_settings table
+                try {
+                    const { data: row, error: setErr } = await db
+                        .from('site_settings')
+                        .select('value')
+                        .eq('key', 'about_studio')
+                        .maybeSingle();
+
+                    if (!setErr && row && row.value) {
+                        aboutData = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+                    }
+                } catch (e) {}
+
+                // Check artworks table fallback
+                if (!aboutData) {
+                    try {
+                        const { data: artAbout } = await db
+                            .from('artworks')
+                            .select('*')
+                            .eq('category', 'about_studio')
+                            .limit(1)
+                            .maybeSingle();
+
+                        if (artAbout) {
+                            let meta = {};
+                            if (artAbout.secondary_images) {
+                                try {
+                                    meta = typeof artAbout.secondary_images === 'string'
+                                        ? JSON.parse(artAbout.secondary_images)
+                                        : (Array.isArray(artAbout.secondary_images) ? (typeof artAbout.secondary_images[0] === 'string' ? JSON.parse(artAbout.secondary_images[0]) : artAbout.secondary_images[0]) : {});
+                                } catch {}
+                            }
+                            aboutData = {
+                                image: artAbout.image_url || meta.image || 'images/artist_studio_atwork.png',
+                                subtitle: artAbout.price || meta.subtitle || 'Artistic Philosophy',
+                                title: artAbout.name || meta.title || 'About The Studio',
+                                quote: artAbout.size || meta.quote || '"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."',
+                                description: artAbout.description || meta.description || 'Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture.',
+                                pillarTitle1: meta.pillarTitle1 || meta.pillars?.[0]?.title || 'Craftsmanship',
+                                pillarDesc1: meta.pillarDesc1 || meta.pillars?.[0]?.desc || 'Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.',
+                                pillarTitle2: meta.pillarTitle2 || meta.pillars?.[1]?.title || 'Interior Harmony',
+                                pillarDesc2: meta.pillarDesc2 || meta.pillars?.[1]?.desc || 'Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.',
+                                updated_at: artAbout.created_at || meta.updated_at
+                            };
+                        }
+                    } catch (e) {}
+                }
+
+                if (aboutData) {
+                    renderAboutStudio(aboutData);
+                    try {
+                        localStorage.setItem('ruba_cached_about', JSON.stringify(aboutData));
+                    } catch (e) {}
+                }
+            } catch (err) {
+                console.warn('loadAboutStudio fetch note:', err);
             }
         }
 
@@ -839,7 +988,7 @@
             if (!track) return;
 
             try {
-                let stories = [];
+                let supabaseStories = [];
                 try {
                     const nowIso = new Date().toISOString();
                     const { data, error } = await db
@@ -848,18 +997,44 @@
                         .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
                         .order('created_at', { ascending: false });
 
-                    if (!error && data && data.length > 0) {
-                        stories = data;
+                    if (!error && Array.isArray(data)) {
+                        supabaseStories = data;
                     }
                 } catch (queryErr) {
                     console.warn('[Studio Stories] Database note:', queryErr);
                 }
 
-                if (stories.length === 0) {
-                    stories = DEFAULT_STUDIO_STORIES;
+                // Fallback check from studio_moments if studio_stories is empty
+                if (supabaseStories.length === 0) {
+                    try {
+                        const { data: momData } = await db
+                            .from('studio_moments')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        if (momData && momData.length > 0) {
+                            supabaseStories = momData.map(m => ({
+                                id: m.id,
+                                title: m.title || 'Studio Story',
+                                media_url: m.image_url,
+                                link_url: m.caption && m.caption.startsWith('http') ? m.caption : null,
+                                created_at: m.created_at
+                            }));
+                        }
+                    } catch (e) {}
                 }
 
-                currentStudioStories = stories;
+                // MERGE LOGIC: Newly published Supabase stories first, followed by curated default stories
+                const storyMap = new Map();
+                (supabaseStories || []).forEach(story => {
+                    if (story && story.id) storyMap.set(story.id, story);
+                });
+                (DEFAULT_STUDIO_STORIES || []).forEach(story => {
+                    if (story && story.id && !storyMap.has(story.id)) {
+                        storyMap.set(story.id, story);
+                    }
+                });
+
+                currentStudioStories = Array.from(storyMap.values());
                 renderStoriesBar(currentStudioStories);
 
             } catch (err) {

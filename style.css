@@ -184,6 +184,29 @@ img {
     transition: var(--transition-smooth);
 }
 
+.main-header.header-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(180deg, rgba(10, 10, 12, 0.88) 0%, rgba(10, 10, 12, 0.35) 60%, transparent 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease;
+}
+
+.main-header.header-overlay.scrolled {
+    position: fixed;
+    background: rgba(15, 15, 17, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
 .main-header .container {
     display: flex;
     align-items: center;
@@ -522,6 +545,87 @@ img {
     overflow: hidden;
 }
 
+/* Full-Bleed Merged Hero Section (Like rawanbags.store) */
+.hero-section.hero-fullbleed {
+    position: relative;
+    width: 100%;
+    min-height: 88vh;
+    height: 94vh;
+    max-height: 1080px;
+    display: flex;
+    align-items: center;
+    padding: 130px 0 80px;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+}
+
+.hero-bg-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    background-color: #0f0f0f;
+}
+
+.hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.02);
+    transition: transform 1.5s var(--ease-editorial);
+}
+
+.hero-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(to right, rgba(10, 10, 12, 0.94) 0%, rgba(10, 10, 12, 0.72) 48%, rgba(10, 10, 12, 0.35) 100%),
+        linear-gradient(to top, rgba(10, 10, 12, 0.96) 0%, rgba(10, 10, 12, 0.25) 55%, rgba(10, 10, 12, 0.6) 100%);
+    pointer-events: none;
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.hero-content-overlay {
+    max-width: 680px;
+    animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-content-overlay .hero-title {
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.85);
+}
+
+.hero-content-overlay .hero-description {
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.85);
+    color: rgba(245, 245, 247, 0.92);
+}
+
+.hero-content-overlay .hero-badge {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    margin-top: 35px;
+    background: rgba(15, 15, 17, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 4px;
+    padding: 16px 22px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    max-width: 340px;
+}
+
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1.1fr;
@@ -633,6 +737,16 @@ img {
     border: 1px solid var(--border-subtle);
     max-width: 260px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+.hero-badge[hidden],
+.hero-badge.is-hidden {
+    display: none !important;
+}
+
+.hero-badge-title:empty,
+.hero-badge-desc:empty {
+    display: none !important;
 }
 
 .hero-badge-title {
@@ -1556,18 +1670,85 @@ img {
         display: flex;
     }
 
-    /* 2. Hero Section & Mobile Layout */
+    /* 2. Full-Bleed Merged Hero Section Mobile */
+    .main-header.header-overlay {
+        padding: 16px 0;
+    }
+
+    .hero-section.hero-fullbleed {
+        min-height: 85vh;
+        height: auto;
+        padding: 125px 0 60px;
+        align-items: flex-end;
+    }
+
+    .hero-bg-overlay {
+        background: 
+            linear-gradient(to top, rgba(10, 10, 12, 0.98) 0%, rgba(10, 10, 12, 0.75) 55%, rgba(10, 10, 12, 0.45) 100%);
+    }
+
+    .hero-content-overlay {
+        max-width: 100%;
+    }
+
+    .hero-content-overlay .hero-tag {
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+        margin-bottom: 14px;
+        gap: 8px;
+        white-space: normal;
+        line-height: 1.4;
+    }
+
+    .hero-content-overlay .hero-title {
+        font-size: clamp(2.3rem, 8.5vw, 3.4rem);
+        margin-bottom: 16px;
+        line-height: 1.15;
+    }
+
+    .hero-content-overlay .hero-description {
+        font-size: 0.96rem;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .hero-content-overlay .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .hero-content-overlay .hero-buttons a,
+    .hero-content-overlay .hero-buttons .primary-btn,
+    .hero-content-overlay .hero-buttons .secondary-btn {
+        width: 100%;
+        text-align: center;
+        padding: 14px 20px;
+        font-size: 0.82rem;
+        letter-spacing: 1.5px;
+    }
+
+    .hero-content-overlay .hero-badge {
+        margin-top: 25px;
+        margin-left: 0;
+        margin-right: 0;
+        max-width: 100%;
+        padding: 14px 18px;
+    }
+
     .hero-section {
         min-height: auto;
         padding: 25px 0 60px;
     }
 
     .hero-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column-reverse;
         gap: 32px;
     }
 
     .hero-content {
+        order: 1;
         padding-right: 0;
     }
 
@@ -1614,14 +1795,31 @@ img {
     }
 
     .hero-media-wrapper {
+        order: -1;
         width: 100%;
-        margin-top: 10px;
+        margin-top: 0;
+        margin-bottom: 8px;
     }
 
     .hero-media-frame {
-        height: 360px;
-        max-height: 55vh;
+        width: 100%;
+        height: auto;
+        max-height: none;
         border-radius: 4px;
+        background: transparent;
+        box-shadow: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-media-frame img {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(197, 160, 89, 0.3);
     }
 
     .hero-badge {
@@ -2936,7 +3134,13 @@ img {
         display: none;
     }
     .hero-media-frame {
-        height: 300px;
+        height: auto;
+    }
+    .hero-media-frame img {
+        width: 100%;
+        height: auto;
+        max-height: 65vh;
+        object-fit: contain;
     }
     .hero-badge {
         margin-left: 8px;

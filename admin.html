@@ -78,6 +78,9 @@
                 <button class="admin-tab-btn" id="tab-btn-hero" onclick="switchAdminTab('hero')">
                     <span>Hero & Showcase</span>
                 </button>
+                <button class="admin-tab-btn" id="tab-btn-about" onclick="switchAdminTab('about')">
+                    <span>About Studio</span>
+                </button>
                 <button class="admin-tab-btn" id="tab-btn-moments" onclick="switchAdminTab('moments')">
                     <span>Studio Moments</span>
                     <span class="tab-badge" id="stories-count-badge" style="display:none;">0</span>
@@ -285,6 +288,120 @@
                                 <div class="hero-preview-tag" id="heroPreviewTag">Bespoke Contemporary Art</div>
                                 <div class="hero-preview-title" id="heroPreviewTitle">Timeless Art for Modern Interiors</div>
                                 <div class="hero-preview-desc" id="heroPreviewDesc">Original paintings and handcrafted resin artworks created to complement refined interiors.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB: ABOUT THE STUDIO SETTINGS ── -->
+            <div class="admin-tab-pane" id="tab-pane-about" style="display: none;">
+                <div class="admin-management-box">
+                    <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px;">
+                        <h2>About The Studio & Philosophy Settings</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                            Customize the artist studio narrative, studio photo, philosophical quote, craftsmanship, and interior harmony pillars displayed on the homepage.
+                        </p>
+                    </div>
+
+                    <div class="admin-grid" style="align-items: flex-start;">
+                        <!-- Edit About Studio Form -->
+                        <div class="admin-box" style="background: var(--bg-primary);">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 20px;">Configure Studio Narrative</h3>
+                            <form class="admin-form" onsubmit="event.preventDefault(); saveAboutSettings();">
+                                <div class="form-group">
+                                    <label for="aboutSubtitle">Section Eyebrow / Subtitle</label>
+                                    <input type="text" id="aboutSubtitle" placeholder="e.g. Artistic Philosophy" oninput="updateAboutPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="aboutTitle">Section Main Heading</label>
+                                    <input type="text" id="aboutTitle" placeholder="e.g. About The Studio" oninput="updateAboutPreview()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="aboutQuote">Highlighted Artistic Quote</label>
+                                    <textarea id="aboutQuote" rows="3" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 12px; font-family: var(--font-body); font-size: 0.88rem; resize: vertical;" placeholder="e.g. &quot;I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors.&quot;" oninput="updateAboutPreview()"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="aboutDescription">Main Narrative Paragraph</label>
+                                    <textarea id="aboutDescription" rows="4" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 12px; font-family: var(--font-body); font-size: 0.88rem; resize: vertical;" placeholder="e.g. Every piece originates from an exploration of spatial equilibrium..." oninput="updateAboutPreview()"></textarea>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 15px; background: rgba(255,255,255,0.02); padding: 15px; border: 1px solid var(--border-subtle); border-radius: 4px; margin-bottom: 15px;">
+                                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent-gold); font-weight: 600;">Left Pillar (Craftsmanship)</span>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="aboutPillarTitle1">Pillar 1 Title</label>
+                                        <input type="text" id="aboutPillarTitle1" placeholder="e.g. Craftsmanship" oninput="updateAboutPreview()">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="aboutPillarDesc1">Pillar 1 Description</label>
+                                        <textarea id="aboutPillarDesc1" rows="2" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 10px; font-family: var(--font-body); font-size: 0.85rem;" placeholder="e.g. Uncompromising archival materials..." oninput="updateAboutPreview()"></textarea>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 15px; background: rgba(255,255,255,0.02); padding: 15px; border: 1px solid var(--border-subtle); border-radius: 4px; margin-bottom: 15px;">
+                                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent-gold); font-weight: 600;">Right Pillar (Interior Harmony)</span>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="aboutPillarTitle2">Pillar 2 Title</label>
+                                        <input type="text" id="aboutPillarTitle2" placeholder="e.g. Interior Harmony" oninput="updateAboutPreview()">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="aboutPillarDesc2">Pillar 2 Description</label>
+                                        <textarea id="aboutPillarDesc2" rows="2" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 10px; font-family: var(--font-body); font-size: 0.85rem;" placeholder="e.g. Color palettes tailored specifically..." oninput="updateAboutPreview()"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="aboutImgFile" style="font-weight:600; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:5px;">Upload Studio Photo</label>
+                                    <label class="admin-file-label" for="aboutImgFile">
+                                        <span id="about-file-label-text">Select Studio Image</span>
+                                    </label>
+                                    <input type="file" id="aboutImgFile" accept="image/*">
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <label for="aboutImgUrl">Or Direct Studio Image URL</label>
+                                    <input type="url" id="aboutImgUrl" placeholder="https://... (or leave blank if uploading file)" oninput="updateAboutPreview()">
+                                </div>
+
+                                <button type="submit" id="save-about-btn" class="primary-btn" style="width: 100%; margin-top: 15px;">Save About Studio Settings</button>
+                                <div id="about-status-toast" class="hero-status-toast"></div>
+                            </form>
+                        </div>
+
+                        <!-- Live About Studio Preview Card -->
+                        <div class="hero-preview-container" style="background: var(--bg-primary);">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h3 style="font-family: var(--font-heading); font-size: 1.5rem;">Live Studio Preview</h3>
+                                <span style="font-size:0.72rem; letter-spacing:1px; text-transform:uppercase; color:var(--accent-gold); font-weight:600;">Active Display</span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.82rem;">Real-time preview of the About The Studio section on the homepage:</p>
+                            
+                            <div style="position: relative; width: 100%; height: 260px; overflow: hidden; border-radius: 4px; border: 1px solid var(--border-subtle); margin: 15px 0; background: #08080A;">
+                                <img id="aboutPreviewImg" src="images/artist_studio_atwork.png" alt="Studio Preview" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='images/artist_studio_atwork.png'">
+                            </div>
+
+                            <div style="padding: 10px 0;">
+                                <span id="aboutPreviewSubtitle" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--accent-gold); display:block; margin-bottom:6px;">Artistic Philosophy</span>
+                                <h3 id="aboutPreviewTitle" style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 12px;">About The Studio</h3>
+                                <blockquote id="aboutPreviewQuote" style="border-left: 2px solid var(--accent-gold); padding-left: 14px; margin: 12px 0; font-style: italic; color: var(--text-primary); font-size: 0.9rem; line-height: 1.5;">
+                                    "I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."
+                                </blockquote>
+                                <p id="aboutPreviewDesc" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+                                    Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture...
+                                </p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+                                    <div>
+                                        <h4 id="aboutPreviewPillarTitle1" style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 4px;">Craftsmanship</h4>
+                                        <p id="aboutPreviewPillarDesc1" style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Uncompromising archival materials, bespoke wood frames...</p>
+                                    </div>
+                                    <div>
+                                        <h4 id="aboutPreviewPillarTitle2" style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 4px;">Interior Harmony</h4>
+                                        <p id="aboutPreviewPillarDesc2" style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Color palettes tailored specifically to complement microcement...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -589,7 +706,7 @@
         }
 
         function switchAdminTab(tabName) {
-            const tabs = ['artworks', 'hero', 'moments', 'inquiries', 'account'];
+            const tabs = ['artworks', 'hero', 'about', 'moments', 'inquiries', 'account'];
             tabs.forEach(t => {
                 const pane = document.getElementById(`tab-pane-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
@@ -597,7 +714,9 @@
                 if (btn) btn.classList.toggle('active', t === tabName);
             });
 
-            if (tabName === 'moments') {
+            if (tabName === 'about') {
+                loadAboutSettings();
+            } else if (tabName === 'moments') {
                 loadStudioStories();
             } else if (tabName === 'inquiries') {
                 loadInquiries();
@@ -658,6 +777,7 @@
             loadArtworks();
             loadStudioStories();
             loadHeroSettings();
+            loadAboutSettings();
             loadInquiries();
         }
 
@@ -2104,6 +2224,316 @@
                 btn.innerText = origText;
                 btn.disabled = false;
             }
+        }
+
+        // ─────────────────────────────────────────────
+        // 6. ABOUT THE STUDIO & PHILOSOPHY CMS CONTROLLER
+        // ─────────────────────────────────────────────
+        let cachedAboutData = null;
+
+        function updateAboutPreview() {
+            try {
+                const sub = document.getElementById('aboutSubtitle')?.value.trim() || 'Artistic Philosophy';
+                const title = document.getElementById('aboutTitle')?.value.trim() || 'About The Studio';
+                const quote = document.getElementById('aboutQuote')?.value.trim() || '"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."';
+                const desc = document.getElementById('aboutDescription')?.value.trim() || 'Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture.';
+                const p1Title = document.getElementById('aboutPillarTitle1')?.value.trim() || 'Craftsmanship';
+                const p1Desc = document.getElementById('aboutPillarDesc1')?.value.trim() || 'Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.';
+                const p2Title = document.getElementById('aboutPillarTitle2')?.value.trim() || 'Interior Harmony';
+                const p2Desc = document.getElementById('aboutPillarDesc2')?.value.trim() || 'Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.';
+                const urlInput = document.getElementById('aboutImgUrl')?.value.trim();
+
+                const pSub = document.getElementById('aboutPreviewSubtitle');
+                const pTitle = document.getElementById('aboutPreviewTitle');
+                const pQuote = document.getElementById('aboutPreviewQuote');
+                const pDesc = document.getElementById('aboutPreviewDesc');
+                const pP1Title = document.getElementById('aboutPreviewPillarTitle1');
+                const pP1Desc = document.getElementById('aboutPreviewPillarDesc1');
+                const pP2Title = document.getElementById('aboutPreviewPillarTitle2');
+                const pP2Desc = document.getElementById('aboutPreviewPillarDesc2');
+                const pImg = document.getElementById('aboutPreviewImg');
+
+                if (pSub) pSub.textContent = sub;
+                if (pTitle) pTitle.textContent = title;
+                if (pQuote) pQuote.textContent = quote;
+                if (pDesc) pDesc.textContent = desc;
+                if (pP1Title) pP1Title.textContent = p1Title;
+                if (pP1Desc) pP1Desc.textContent = p1Desc;
+                if (pP2Title) pP2Title.textContent = p2Title;
+                if (pP2Desc) pP2Desc.textContent = p2Desc;
+
+                const fileInput = document.getElementById('aboutImgFile');
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    // Retain local uploaded preview
+                } else if (urlInput && pImg) {
+                    pImg.src = resolveImageUrl(urlInput);
+                }
+            } catch (err) {
+                console.warn('updateAboutPreview error:', err);
+            }
+        }
+
+        async function loadAboutSettings() {
+            try {
+                let aboutData = null;
+
+                // 1. Check site_settings table
+                try {
+                    const { data: row, error: setErr } = await db
+                        .from('site_settings')
+                        .select('value')
+                        .eq('key', 'about_studio')
+                        .maybeSingle();
+
+                    if (!setErr && row && row.value) {
+                        aboutData = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+                    }
+                } catch (e) {}
+
+                // 2. Check artworks table fallback
+                if (!aboutData) {
+                    try {
+                        const { data: artAbout } = await db
+                            .from('artworks')
+                            .select('*')
+                            .eq('category', 'about_studio')
+                            .limit(1)
+                            .maybeSingle();
+
+                        if (artAbout) {
+                            let meta = {};
+                            if (artAbout.secondary_images) {
+                                try {
+                                    meta = typeof artAbout.secondary_images === 'string'
+                                        ? JSON.parse(artAbout.secondary_images)
+                                        : (Array.isArray(artAbout.secondary_images) ? (typeof artAbout.secondary_images[0] === 'string' ? JSON.parse(artAbout.secondary_images[0]) : artAbout.secondary_images[0]) : {});
+                                } catch {}
+                            }
+                            aboutData = {
+                                image: artAbout.image_url || meta.image || 'images/artist_studio_atwork.png',
+                                subtitle: artAbout.price || meta.subtitle || 'Artistic Philosophy',
+                                title: artAbout.name || meta.title || 'About The Studio',
+                                quote: artAbout.size || meta.quote || '"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."',
+                                description: artAbout.description || meta.description || 'Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture.',
+                                pillarTitle1: meta.pillarTitle1 || meta.pillars?.[0]?.title || 'Craftsmanship',
+                                pillarDesc1: meta.pillarDesc1 || meta.pillars?.[0]?.desc || 'Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.',
+                                pillarTitle2: meta.pillarTitle2 || meta.pillars?.[1]?.title || 'Interior Harmony',
+                                pillarDesc2: meta.pillarDesc2 || meta.pillars?.[1]?.desc || 'Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.',
+                                updated_at: artAbout.created_at || meta.updated_at
+                            };
+                        }
+                    } catch (e) {}
+                }
+
+                if (!aboutData) {
+                    aboutData = {
+                        image: 'images/artist_studio_atwork.png',
+                        subtitle: 'Artistic Philosophy',
+                        title: 'About The Studio',
+                        quote: '"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."',
+                        description: 'Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture. Designed specifically to interact with architectural lighting and interior proportions, each canvas serves as a tactile focal point.',
+                        pillarTitle1: 'Craftsmanship',
+                        pillarDesc1: 'Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.',
+                        pillarTitle2: 'Interior Harmony',
+                        pillarDesc2: 'Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.'
+                    };
+                }
+
+                cachedAboutData = aboutData;
+
+                // Populate input fields
+                if (document.getElementById('aboutSubtitle')) document.getElementById('aboutSubtitle').value = aboutData.subtitle || '';
+                if (document.getElementById('aboutTitle')) document.getElementById('aboutTitle').value = aboutData.title || '';
+                if (document.getElementById('aboutQuote')) document.getElementById('aboutQuote').value = aboutData.quote || '';
+                if (document.getElementById('aboutDescription')) document.getElementById('aboutDescription').value = aboutData.description || '';
+                if (document.getElementById('aboutPillarTitle1')) document.getElementById('aboutPillarTitle1').value = aboutData.pillarTitle1 || (aboutData.pillars?.[0]?.title || '');
+                if (document.getElementById('aboutPillarDesc1')) document.getElementById('aboutPillarDesc1').value = aboutData.pillarDesc1 || (aboutData.pillars?.[0]?.desc || '');
+                if (document.getElementById('aboutPillarTitle2')) document.getElementById('aboutPillarTitle2').value = aboutData.pillarTitle2 || (aboutData.pillars?.[1]?.title || '');
+                if (document.getElementById('aboutPillarDesc2')) document.getElementById('aboutPillarDesc2').value = aboutData.pillarDesc2 || (aboutData.pillars?.[1]?.desc || '');
+                if (document.getElementById('aboutImgUrl') && aboutData.image && !aboutData.image.startsWith('images/')) {
+                    document.getElementById('aboutImgUrl').value = aboutData.image;
+                }
+
+                const pImg = document.getElementById('aboutPreviewImg');
+                if (pImg && aboutData.image) {
+                    pImg.src = resolveImageUrl(aboutData.image);
+                }
+
+                updateAboutPreview();
+
+            } catch (err) {
+                console.warn('loadAboutSettings note:', err);
+            }
+        }
+
+        async function saveAboutSettings() {
+            const btn = document.getElementById('save-about-btn');
+            const toast = document.getElementById('about-status-toast');
+            const origText = btn.innerText;
+
+            btn.innerText = 'SAVING ABOUT STUDIO SETTINGS...';
+            btn.disabled = true;
+            if (toast) {
+                toast.style.display = 'none';
+                toast.className = 'hero-status-toast';
+            }
+
+            try {
+                const fileInput = document.getElementById('aboutImgFile');
+                const file = fileInput.files[0];
+                const directUrl = document.getElementById('aboutImgUrl').value.trim();
+
+                let activeImageUrl = directUrl;
+
+                // If file uploaded, compress then upload to Supabase storage
+                if (file) {
+                    const fileToUpload = await compressImageFile(file);
+                    const ext = fileToUpload.name.split('.').pop() || 'jpg';
+                    const filePath = `about/about_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+                    const { error: uploadError } = await db.storage
+                        .from('artworks')
+                        .upload(filePath, fileToUpload, {
+                            cacheControl: '3600',
+                            upsert: true,
+                            contentType: fileToUpload.type || 'image/jpeg'
+                        });
+
+                    if (uploadError) {
+                        throw new Error('Image upload failed: ' + uploadError.message);
+                    }
+
+                    const { data: urlData } = db.storage
+                        .from('artworks')
+                        .getPublicUrl(filePath);
+
+                    const sdkUrl = urlData?.publicUrl || '';
+                    activeImageUrl = sdkUrl.startsWith('https://')
+                        ? sdkUrl
+                        : resolveImageUrl(filePath);
+                }
+
+                if (!activeImageUrl) {
+                    activeImageUrl = cachedAboutData?.image || 'images/artist_studio_atwork.png';
+                }
+
+                activeImageUrl = resolveImageUrl(activeImageUrl) || activeImageUrl;
+
+                const p1Title = document.getElementById('aboutPillarTitle1').value.trim() || 'Craftsmanship';
+                const p1Desc = document.getElementById('aboutPillarDesc1').value.trim() || 'Uncompromising archival materials, bespoke wood frames, and hand-poured multi-layered resin glazes.';
+                const p2Title = document.getElementById('aboutPillarTitle2').value.trim() || 'Interior Harmony';
+                const p2Desc = document.getElementById('aboutPillarDesc2').value.trim() || 'Color palettes tailored specifically to complement microcement, stone, fine timber, and neutral textiles.';
+
+                const aboutPayload = {
+                    image: activeImageUrl,
+                    imageAlt: 'Inside the Atelier Art Studio',
+                    subtitle: document.getElementById('aboutSubtitle').value.trim() || 'Artistic Philosophy',
+                    title: document.getElementById('aboutTitle').value.trim() || 'About The Studio',
+                    quote: document.getElementById('aboutQuote').value.trim() || '"I create contemporary artworks that bring calm, texture, and timeless elegance into modern interiors."',
+                    description: document.getElementById('aboutDescription').value.trim() || 'Every piece originates from an exploration of spatial equilibrium, high-grade resin physics, and organic texture. Designed specifically to interact with architectural lighting and interior proportions, each canvas serves as a tactile focal point.',
+                    pillarTitle1: p1Title,
+                    pillarDesc1: p1Desc,
+                    pillarTitle2: p2Title,
+                    pillarDesc2: p2Desc,
+                    pillars: [
+                        { title: p1Title, desc: p1Desc },
+                        { title: p2Title, desc: p2Desc }
+                    ],
+                    updated_at: new Date().toISOString()
+                };
+
+                console.log("Saved About Studio Payload:", aboutPayload);
+
+                let savedToSettings = false;
+                let savedToArtworks = false;
+
+                // 1. Try site_settings table
+                try {
+                    const { error: setErr } = await db.from('site_settings').upsert({
+                        key: 'about_studio',
+                        value: aboutPayload,
+                        updated_at: aboutPayload.updated_at
+                    });
+                    if (!setErr) savedToSettings = true;
+                } catch (e) {}
+
+                // 2. Fallback / Sync to artworks table
+                try {
+                    const artRecord = {
+                        name: aboutPayload.title,
+                        price: aboutPayload.subtitle,
+                        size: aboutPayload.quote,
+                        category: 'about_studio',
+                        image_url: aboutPayload.image,
+                        description: aboutPayload.description,
+                        secondary_images: [JSON.stringify(aboutPayload)]
+                    };
+
+                    const { data: existing } = await db.from('artworks').select('id').eq('category', 'about_studio').limit(1).maybeSingle();
+                    if (existing && existing.id) {
+                        const { error: updErr } = await db.from('artworks').update(artRecord).eq('id', existing.id);
+                        if (!updErr) savedToArtworks = true;
+                    } else {
+                        const { error: insErr } = await db.from('artworks').insert([artRecord]);
+                        if (!insErr) savedToArtworks = true;
+                    }
+                } catch (e) {}
+
+                cachedAboutData = aboutPayload;
+
+                try {
+                    localStorage.setItem('ruba_cached_about', JSON.stringify(aboutPayload));
+                } catch (e) {}
+
+                fileInput.value = '';
+                document.getElementById('about-file-label-text').innerText = 'Select Studio Image';
+                if (document.getElementById('aboutImgUrl')) {
+                    document.getElementById('aboutImgUrl').value = activeImageUrl.startsWith('images/') ? '' : activeImageUrl;
+                }
+
+                updateAboutPreview();
+
+                const destination = savedToSettings && savedToArtworks
+                    ? 'site_settings and artworks tables'
+                    : (savedToSettings ? 'site_settings table' : 'artworks table (fallback)');
+
+                if (toast) {
+                    toast.className = 'hero-status-toast success';
+                    toast.innerText = `✓ About Studio settings saved to ${destination} and synchronized live!`;
+                }
+
+                alert(`✓ About The Studio settings successfully saved!\n\nDestination: ${destination}\n• Heading: ${aboutPayload.title}\n• Eyebrow: ${aboutPayload.subtitle}\n• Image: ${aboutPayload.image}`);
+
+            } catch (err) {
+                console.error('Error saving about settings:', err);
+                if (toast) {
+                    toast.className = 'hero-status-toast error';
+                    toast.innerText = 'Failed to save about settings: ' + err.message;
+                }
+                alert('Failed to save about settings: ' + err.message);
+            } finally {
+                btn.innerText = origText;
+                btn.disabled = false;
+            }
+        }
+
+        // File listener for studio photo upload
+        const aboutFileInput = document.getElementById('aboutImgFile');
+        if (aboutFileInput) {
+            aboutFileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                document.getElementById('about-file-label-text').innerText = file
+                    ? file.name.slice(0, 24) + (file.name.length > 24 ? '…' : '')
+                    : 'Select Studio Image';
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        const previewImg = document.getElementById('aboutPreviewImg');
+                        if (previewImg) previewImg.src = evt.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
 
         // ─────────────────────────────────────────────
