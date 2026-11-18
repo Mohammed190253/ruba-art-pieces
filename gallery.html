@@ -21,25 +21,54 @@
 <body>
 
     <!-- Sticky Transparent Header -->
-    <header class="main-header">
-        <div class="container">
-            <div class="header-logo">
+    <header class="main-header" id="header">
+        <div class="container header-container">
+            <div class="header-logo" id="site-logo">
                 <a href="index.html" ondblclick="window.location.href='admin.html'; return false;">
-                    RUBA ART PIECES
+                    <span class="brand-title">RUBA ART PIECES</span>
                     <span class="sub-logo">Contemporary Studio & Bespoke Creations</span>
                 </a>
             </div>
-            <nav class="main-nav">
+            <nav class="main-nav" id="main-nav">
                 <a href="index.html">Home</a>
                 <a href="gallery.html" class="active">Collections</a>
                 <a href="index.html#commissions">Commissions</a>
                 <a href="index.html#about">About</a>
                 <a href="index.html#contact">Contact</a>
             </nav>
+            <!-- Mobile Menu Toggle Button -->
+            <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle Navigation Menu" onclick="toggleMobileNav()">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
         </div>
     </header>
 
-    <main style="padding: 100px 0 140px;">
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+        <div class="mobile-drawer-header">
+            <div class="drawer-brand">
+                <span class="drawer-brand-title">RUBA ART PIECES</span>
+                <span class="drawer-sub-logo">Contemporary Studio</span>
+            </div>
+            <button type="button" class="mobile-drawer-close" onclick="toggleMobileNav(false)" aria-label="Close Navigation">&times;</button>
+        </div>
+        <nav class="mobile-drawer-nav">
+            <a href="index.html" onclick="toggleMobileNav(false)">Home</a>
+            <a href="gallery.html" class="active" onclick="toggleMobileNav(false)">Collections</a>
+            <a href="index.html#commissions" onclick="toggleMobileNav(false)">Commissions</a>
+            <a href="index.html#about" onclick="toggleMobileNav(false)">About</a>
+            <a href="index.html#contact" onclick="toggleMobileNav(false)">Contact</a>
+        </nav>
+        <div class="mobile-drawer-footer">
+            <a href="https://wa.me/962790692555" target="_blank" class="primary-btn drawer-inquire-btn">WhatsApp Concierge</a>
+            <p class="drawer-contact-note">Amman, Jordan &bull; Worldwide Private Placement</p>
+        </div>
+    </div>
+    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" onclick="toggleMobileNav(false)"></div>
+
+    <main class="gallery-main">
         <div class="container">
 
             <div class="section-header" style="margin-bottom: 40px;">
@@ -204,6 +233,19 @@
         const SUPABASE_ANON_KEY = "sb_publishable_nVpxpdYZKdDKgyuWZA62mg_QMKx_qlO";
         const { createClient } = supabase;
         const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Mobile Navigation Drawer Toggle
+        function toggleMobileNav(forceState) {
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const backdrop = document.getElementById('mobile-nav-backdrop');
+            const toggleBtn = document.getElementById('mobile-nav-toggle');
+            if (!drawer) return;
+            const shouldOpen = typeof forceState === 'boolean' ? forceState : !drawer.classList.contains('active');
+            drawer.classList.toggle('active', shouldOpen);
+            if (backdrop) backdrop.classList.toggle('active', shouldOpen);
+            if (toggleBtn) toggleBtn.classList.toggle('active', shouldOpen);
+            document.body.style.overflow = shouldOpen ? 'hidden' : '';
+        }
 
         // ─── Supabase Image URL Helper ─────────────────────────────────────────
         function resolveImageUrl(path) {

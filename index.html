@@ -25,22 +25,51 @@
 
     <!-- Sticky Transparent Luxury Header -->
     <header class="main-header" id="header">
-        <div class="container">
+        <div class="container header-container">
             <div class="header-logo" id="site-logo">
                 <a href="index.html" ondblclick="window.location.href='admin.html'; return false;">
-                    R U B A &nbsp; A R T &nbsp; P I E C E S
+                    <span class="brand-title">RUBA ART PIECES</span>
                     <span class="sub-logo">Contemporary Studio & Bespoke Creations</span>
                 </a>
             </div>
-            <nav class="main-nav">
+            <nav class="main-nav" id="main-nav">
                 <a href="index.html" class="active">Home</a>
                 <a href="gallery.html">Collections</a>
                 <a href="#commissions">Commissions</a>
                 <a href="#about">About</a>
                 <a href="#contact">Contact</a>
             </nav>
+            <!-- Mobile Menu Toggle Button -->
+            <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle Navigation Menu" onclick="toggleMobileNav()">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
         </div>
     </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+        <div class="mobile-drawer-header">
+            <div class="drawer-brand">
+                <span class="drawer-brand-title">RUBA ART PIECES</span>
+                <span class="drawer-sub-logo">Contemporary Studio</span>
+            </div>
+            <button type="button" class="mobile-drawer-close" onclick="toggleMobileNav(false)" aria-label="Close Navigation">&times;</button>
+        </div>
+        <nav class="mobile-drawer-nav">
+            <a href="index.html" class="active" onclick="toggleMobileNav(false)">Home</a>
+            <a href="gallery.html" onclick="toggleMobileNav(false)">Collections</a>
+            <a href="#commissions" onclick="toggleMobileNav(false)">Commissions</a>
+            <a href="#about" onclick="toggleMobileNav(false)">About</a>
+            <a href="#contact" onclick="toggleMobileNav(false)">Contact</a>
+        </nav>
+        <div class="mobile-drawer-footer">
+            <a href="https://wa.me/962790692555" target="_blank" class="primary-btn drawer-inquire-btn">WhatsApp Concierge</a>
+            <p class="drawer-contact-note">Amman, Jordan &bull; Worldwide Private Placement</p>
+        </div>
+    </div>
+    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" onclick="toggleMobileNav(false)"></div>
 
     <main>
         <!-- Studio Moments (Artist Stories) Bar -->
@@ -312,7 +341,7 @@
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <div class="footer-logo-text">R U B A &nbsp; A R T &nbsp; P I E C E S</div>
+                    <div class="footer-logo-text">RUBA ART PIECES</div>
                     <p class="footer-tagline">Contemporary Studio & Bespoke Creations</p>
                 </div>
                 
@@ -496,6 +525,19 @@
             loadFeaturedArtworks();
             loadStudioMoments();
         });
+
+        // Mobile Navigation Drawer Toggle
+        function toggleMobileNav(forceState) {
+            const drawer = document.getElementById('mobile-nav-drawer');
+            const backdrop = document.getElementById('mobile-nav-backdrop');
+            const toggleBtn = document.getElementById('mobile-nav-toggle');
+            if (!drawer) return;
+            const shouldOpen = typeof forceState === 'boolean' ? forceState : !drawer.classList.contains('active');
+            drawer.classList.toggle('active', shouldOpen);
+            if (backdrop) backdrop.classList.toggle('active', shouldOpen);
+            if (toggleBtn) toggleBtn.classList.toggle('active', shouldOpen);
+            document.body.style.overflow = shouldOpen ? 'hidden' : '';
+        }
 
         // Cursor Glow Effect
         document.addEventListener('mousemove', function(e) {
